@@ -16,7 +16,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   // Data user placeholder (simulasi)
-  final String _username = "PembacaBeritaBaik";
+  final String _username = "Zeva Mila Sabrina";
   final String _photoUrl = "https://i.pravatar.cc/150?img=12";
 
   // Konversi
