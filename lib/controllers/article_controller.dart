@@ -1,0 +1,27 @@
+// article_model.dart
+
+class Article {
+  final String title;
+  final String? description;
+  final String? urlToImage;
+  final String? content;
+  final String url;
+
+  Article({
+    required this.title,
+    this.description,
+    this.urlToImage,
+    this.content,
+    required this.url,
+  });
+
+  factory Article.fromJson(Map<String, dynamic> json) {
+    return Article(
+      title: json['title'] ?? 'Judul Tidak Tersedia',
+      description: json['description'],
+      urlToImage: json['urlToImage'],
+      content: json['content'],
+      url: json['url'] ?? '',
+    );
+  }
+}
