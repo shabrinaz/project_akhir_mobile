@@ -2,28 +2,77 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../helpers/db_helper.dart'; // Import DatabaseHelper
+import 'register_screen.dart'; 
 
-class LoginScreen extends StatelessWidget {
+// Ubah menjadi StatefulWidget
+class LoginScreen extends StatefulWidget {
   // Callback untuk memberitahu root widget agar me-reload state
   final VoidCallback onLoginSuccess; 
 
   const LoginScreen({Key? key, required this.onLoginSuccess}) : super(key: key);
+  
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
-  // Simulasi login
-  Future<void> _handleLogin(BuildContext context) async {
-    // Di sini Anda akan memvalidasi username/password ke DB nyata.
-    // Untuk simulasi, kita langsung anggap sukses.
-    
-    final prefs = await SharedPreferences.getInstance();
-    
-    // 1. Set status login menjadi true
-    await prefs.setBool('isLoggedIn', true);
-    
-    // 2. Simpan username simulasi (opsional)
-    await prefs.setString('username', 'PembacaBeritaBaik');
+class _LoginScreenState extends State<LoginScreen> {
+  // Tambahkan Controllers
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+  
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-    // 3. Panggil callback untuk navigasi ke MainNavigationScreen
-    onLoginSuccess();
+  // LOGIKA LOGIN DENGAN VALIDASI DATABASE
+  Future<void> _handleLogin() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Username dan Password tidak boleh kosong!')),
+        );
+      }
+      return;
+    }
+
+    // 1. Panggil fungsi login yang sesungguhnya di database
+    // Fungsi ini akan menghash password dan membandingkannya di DB
+    final user = await _dbHelper.loginUser(username, password);
+
+    if (mounted) {
+      if (user != null) {
+        // 2. Jika user ditemukan (Login Sukses)
+        final prefs = await SharedPreferences.getInstance();
+        
+        // Simpan status login dan data user
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('username', user.username);
+        // Anda juga bisa menyimpan user ID, dll.
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('✅ Login Berhasil! Selamat datang, ${user.username}')),
+        );
+        
+        // 3. Panggil callback untuk navigasi ke MainNavigationScreen
+        widget.onLoginSuccess();
+      } else {
+        // 2. Jika user tidak ditemukan (Login Gagal)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Login Gagal. Username atau Password salah.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -47,18 +96,21 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               
-              // Input Simulasi
-              const TextField(
-                decoration: InputDecoration(
+              // Input Username (dihubungkan ke Controller)
+              TextField( 
+                controller: _usernameController,
+                decoration: const InputDecoration(
                   labelText: 'Username',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
               ),
               const SizedBox(height: 15),
-              const TextField(
+              // Input Password (dihubungkan ke Controller)
+              TextField( 
+                controller: _passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
@@ -66,17 +118,28 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               
-              // Tombol Login
+              // Tombol Login (memanggil _handleLogin yang sudah diperbaiki)
               ElevatedButton(
-                onPressed: () => _handleLogin(context),
+                onPressed: _handleLogin, 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: const Text('LOGIN', style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
-              const SizedBox(height: 10),
-              const Text("Login akan otomatis sukses untuk simulasi.", style: TextStyle(color: Colors.grey)),
+              
+              // Tombol Register
+              TextButton(
+                onPressed: () {
+                  // Navigasi ke RegisterScreen
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Belum punya akun? Daftar sekarang!', style: TextStyle(fontSize: 16)),
+              ),
             ],
           ),
         ),
