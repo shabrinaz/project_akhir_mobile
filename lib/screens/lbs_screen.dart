@@ -14,7 +14,7 @@ class LBSScreen extends StatefulWidget {
 
 class _LBSScreenState extends State<LBSScreen> {
   // Koordinat default (misal: Jakarta, Indonesia)
-  static const LatLng _defaultCenter = LatLng(-6.2088, 106.8456);
+  static const LatLng _defaultCenter = LatLng(-7.8004, 110.3912);
   LatLng _currentPosition = _defaultCenter;
   bool _isLoading = true;
   String _locationStatus = 'Memuat lokasi...';
