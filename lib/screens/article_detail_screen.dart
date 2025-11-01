@@ -286,7 +286,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         Expanded(
                           child: Text(
                             _pointsAwarded
-                                ? "Poin sudah ditambahkan! Anda sudah menyelesaikan artikel ini."
+                                ? "Poin sudah ditambahkan! Baca lebih lanjut melalui link di bawah ini."
                                 : "Gulir hingga akhir artikel untuk mendapatkan poin!",
                             style: TextStyle(color: _pointsAwarded ? Colors.green : Colors.blueGrey, fontWeight: FontWeight.bold),
                           ),
