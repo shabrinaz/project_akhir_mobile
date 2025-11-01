@@ -18,9 +18,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Data user yang diperbarui
   final String _username = "Zeva Mila Sabrina";
   final String _nim = "124230043"; // Ditambahkan NIM
-  // Menggunakan URL gambar dari profil Rakamin (diambil dari tautan Google)
-  final String _photoUrl = "https://www.rakamin.com/profile/zeva-mila-sabrina-meo03scczfk3sefj"; 
-
+  // Catatan: URL foto dihapus dan diganti dengan AssetImage di bagian build()
+  
   // Konversi
   final double _pointToRupiahRate = 10.0;
   final double _usdToRupiahExchangeRate = 16000;
@@ -144,8 +143,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           CircleAvatar(
             radius: 60,
             backgroundColor: Colors.blue.shade100,
-            // Menggunakan NetworkImage dari URL yang Anda berikan
-            backgroundImage: NetworkImage(_photoUrl), 
+            // MENGGUNAKAN ASSET LOKAL
+            backgroundImage: const AssetImage('lib/assets/image/zeva.jpg'), 
           ),
           const SizedBox(height: 15),
 
