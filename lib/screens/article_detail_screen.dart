@@ -22,6 +22,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   late ScrollController _scrollController;
   // Status apakah poin sudah diberikan untuk artikel ini
   bool _pointsAwarded = false; 
+  
+  // ====================== PENAMBAHAN BARU: FAVORIT ======================
+  bool _isFavorite = false; // Status apakah artikel ini sudah difavoritkan
+  static const String _favoritePrefix = 'is_favorite_'; // Prefix untuk key SharedPreferences
+  // ======================================================================
 
   @override
   void initState() {
@@ -31,6 +36,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     _scrollController.addListener(_scrollListener);
     // Cek status poin saat inisialisasi
     _checkInitialPointsStatus();
+    // ====================== PENAMBAHAN BARU ======================
+    _checkInitialFavoriteStatus(); // Cek status favorit
+    // =============================================================
   }
 
   @override
@@ -53,6 +61,46 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       });
     }
   }
+  
+  // ====================== PENAMBAHAN BARU: Cek Status Favorit ======================
+  Future<void> _checkInitialFavoriteStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String favoriteKey = '$_favoritePrefix${widget.article.url}';
+    
+    // Perbarui state jika artikel ini sudah difavoritkan sebelumnya
+    if (prefs.getBool(favoriteKey) == true) {
+      setState(() {
+        _isFavorite = true;
+      });
+    }
+  }
+  
+  // ====================== PENAMBAHAN BARU: Toggle Favorit ======================
+  void _toggleFavorite() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String favoriteKey = '$_favoritePrefix${widget.article.url}';
+    
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+
+    // Simpan status baru
+    await prefs.setBool(favoriteKey, _isFavorite);
+
+    // Tampilkan notifikasi
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isFavorite 
+              ? '❤️ Artikel ditambahkan ke favorit!' 
+              : '🤍 Artikel dihapus dari favorit.',
+        ),
+        backgroundColor: _isFavorite ? Colors.red.shade400 : Colors.blueGrey,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+  // =================================================================================
 
   // LOGIKA DETEKSI SCROLL HINGGA BAWAH (Menggunakan hasClients)
   void _scrollListener() {
@@ -155,6 +203,20 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        // ====================== PENAMBAHAN BARU: ACTION BUTTON (FAVORIT) ======================
+        actions: [
+          IconButton(
+            onPressed: _toggleFavorite, // Panggil fungsi toggle
+            icon: Icon(
+              // Gunakan ikon penuh (favorite) jika sudah difavoritkan
+              _isFavorite ? Icons.favorite : Icons.favorite_border,
+              // Warna MERAH jika difavoritkan, putiha (default AppBar) jika tidak
+              color: _isFavorite ? Colors.red : Colors.white, 
+              size: 28,
+            ),
+          ),
+        ],
+        // =======================================================================================
       ),
       extendBodyBehindAppBar: true, 
       
