@@ -41,6 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _totalPoints = points;
     });
+    // LOGIKA TIMEZONE SUDAH DIHAPUS DARI SINI
   }
 
   // Menghitung nilai konversi
@@ -88,7 +89,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     // 1. Hapus session
     await prefs.remove('isLoggedIn');
-
+    // TIDAK PERLU menghapus kunci timezone lama
+    
     // 2. Beri pesan
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -104,15 +106,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold di ProfileScreen tidak lagi memiliki AppBar
-    // karena akan dikelola oleh MainNavigationScreen.
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          // ... (Bagian Foto, Username, Poin, Konversi tetap sama)
           // 1. Foto Profil
           CircleAvatar(
             radius: 60,
@@ -157,6 +155,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildCurrencySelector(),
 
           const SizedBox(height: 40),
+          
+          // WIDGET PEMILIH ZONA WAKTU SUDAH DIHAPUS DARI SINI
 
           // 6. Tombol Logout
           ElevatedButton.icon(
@@ -228,32 +228,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildCurrencySelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blueGrey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _currency,
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-          hint: const Text("Pilih Mata Uang Konversi"),
-          items: <String>['IDR', 'USD', 'CNY'].map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value == 'IDR'
-                    ? 'Rupiah (IDR)'
-                    : value == 'USD'
-                    ? 'US Dollar (USD)'
-                    : 'Yuan (CNY)',
-              ),
-            );
-          }).toList(),
-          onChanged: _onCurrencyChange,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Pilih Mata Uang Konversi:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.blueGrey),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _currency,
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+              hint: const Text("Pilih Mata Uang Konversi"),
+              items: <String>['IDR', 'USD', 'CNY'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value == 'IDR'
+                        ? 'Rupiah (IDR)'
+                        : value == 'USD'
+                        ? 'US Dollar (USD)'
+                        : 'Yuan (CNY)',
+                  ),
+                );
+              }).toList(),
+              onChanged: _onCurrencyChange,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
+  // Tidak ada _buildTimezoneSelector di sini lagi
 }

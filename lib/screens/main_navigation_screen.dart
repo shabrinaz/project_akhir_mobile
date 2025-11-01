@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart'; 
 import 'lbs_screen.dart';
 import 'profile_screen.dart';
+// Import halaman baru
+import 'donation_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   // 📌 Callback wajib dari AuthWrapper untuk memicu navigasi ke LoginScreen
@@ -27,6 +29,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     // Inisialisasi list widget
     _widgetOptions = <Widget>[
       const HomeScreen(),
+      const DonationScreen(), // Halaman baru di Index 1
       const LBSScreen(),
       // Meneruskan callback onLogout dari AuthWrapper ke ProfileScreen
       ProfileScreen(onLogout: widget.onLogout), 
@@ -44,9 +47,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     switch (index) {
       case 0:
         return 'Global Care News';
-      case 1:
-        return 'LBS (Lokasi)';
+      case 1: // Judul untuk halaman baru
+        return 'Donasi Kemanusiaan';
       case 2:
+        return 'LBS (Lokasi)';
+      case 3:
         return 'Profil Pengguna';
       default:
         return '';
@@ -81,12 +86,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       
-      // Bottom Navigation Bar
+      // Bottom Navigation Bar (Diperbarui menjadi 4 item)
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Diperlukan untuk 4 item atau lebih
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem( // Item baru
+            icon: Icon(Icons.favorite),
+            label: 'Donasi',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
