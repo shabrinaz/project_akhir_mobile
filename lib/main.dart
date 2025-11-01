@@ -5,10 +5,47 @@ import 'screens/main_navigation_screen.dart';
 import 'screens/login_screen.dart';
 import 'package:intl/intl.dart'; 
 import 'package:intl/date_symbol_data_local.dart'; 
+// ====================== PENAMBAHAN BARU ======================
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+// Global instance untuk kemudahan akses di file lain
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> _initializeNotifications() async {
+  // Inisialisasi pengaturan untuk Android (Ganti 'app_icon' sesuai ikon di folder mipmap/drawable)
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher'); 
+
+  // Inisialisasi pengaturan untuk iOS/macOS (Meminta izin Alert/Badge/Sound)
+  const DarwinInitializationSettings initializationSettingsDarwin =
+      DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
+  // Gabungkan pengaturan untuk semua platform
+  const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+      macOS: initializationSettingsDarwin);
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    // onDidReceiveNotificationResponse: ... // Tambahkan handler tap notifikasi di sini jika diperlukan
+  );
+}
+// ==========================================================
+
 
 void main() async {
   // Wajib dipanggil pertama
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // ====================== MODIFIKASI: Panggil Init Notifications ======================
+  await _initializeNotifications(); 
+  // =================================================================================
   
   try {
     await initializeDateFormatting('id_ID', null); 

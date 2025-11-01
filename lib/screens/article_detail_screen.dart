@@ -6,12 +6,18 @@ import 'package:url_launcher/url_launcher.dart';             // Untuk membuka UR
 import '../models/article_model.dart';
 import 'package:intl/intl.dart'; 
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:url_launcher/url_launcher.dart'; // Sudah ada di atas, tapi tidak apa-apa
+// ====================== IMPOR UNTUK NOTIFIKASI ======================
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// Mengasumsikan Anda telah menambahkan instance global ini di lib/main.dart
+// Note: Karena saya tidak dapat memverifikasi main.dart, saya asumsikan ia diimpor.
+// Jika main.dart tidak memiliki instance global, ini akan menyebabkan error.
+import '../main.dart'; 
+// ====================================================================
 
 class ArticleDetailScreen extends StatefulWidget {
   final Article article;
 
-  const ArticleDetailScreen({Key? key, required this.article}) : super(key: key);
+  const ArticleDetailScreen({super.key, required this.article});
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -23,38 +29,31 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   // Status apakah poin sudah diberikan untuk artikel ini
   bool _pointsAwarded = false; 
   
-  // ====================== PENAMBAHAN BARU: FAVORIT ======================
+  // ====================== FAVORIT STATE ======================
   bool _isFavorite = false; // Status apakah artikel ini sudah difavoritkan
   static const String _favoritePrefix = 'is_favorite_'; // Prefix untuk key SharedPreferences
-  // ======================================================================
+  // ===========================================================
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    // Tambahkan listener untuk mendeteksi scroll
     _scrollController.addListener(_scrollListener);
-    // Cek status poin saat inisialisasi
     _checkInitialPointsStatus();
-    // ====================== PENAMBAHAN BARU ======================
-    _checkInitialFavoriteStatus(); // Cek status favorit
-    // =============================================================
+    _checkInitialFavoriteStatus(); 
   }
 
   @override
   void dispose() {
-    // 🚩 PERBAIKAN BUG DISINI: Mengganti listener yang salah menjadi _scrollListener
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
   }
   
-  // Fungsi untuk memuat status poin saat widget dimuat
   Future<void> _checkInitialPointsStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final String articleId = widget.article.url;
     
-    // Perbarui state jika poin untuk artikel ini sudah diberikan sebelumnya
     if (prefs.getBool('awarded_$articleId') == true) {
       setState(() {
         _pointsAwarded = true;
@@ -62,12 +61,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
   
-  // ====================== PENAMBAHAN BARU: Cek Status Favorit ======================
   Future<void> _checkInitialFavoriteStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final String favoriteKey = '$_favoritePrefix${widget.article.url}';
     
-    // Perbarui state jika artikel ini sudah difavoritkan sebelumnya
     if (prefs.getBool(favoriteKey) == true) {
       setState(() {
         _isFavorite = true;
@@ -75,7 +72,54 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
   
-  // ====================== PENAMBAHAN BARU: Toggle Favorit ======================
+  // ====================== FUNGSI BARU: SHOW NOTIFIKASI LOKAL ======================
+  Future<void> _showFavoriteNotification(bool isFavorite) async {
+    // Detail untuk Android
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+            'favorite_channel_id', // ID unik Channel
+            'Notifikasi Favorit Artikel', // Nama Channel
+            channelDescription: 'Memberikan notifikasi saat artikel ditambahkan/dihapus dari favorit.',
+            importance: Importance.high, 
+            priority: Priority.high,
+            ticker: 'favorite_ticker',
+            // Warna notifikasi yang sesuai dengan tema biru
+            color: Colors.blue 
+        );
+        
+    // Detail untuk iOS/macOS
+    const DarwinNotificationDetails darwinPlatformChannelSpecifics =
+        DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: true,
+        );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: darwinPlatformChannelSpecifics,
+        macOS: darwinPlatformChannelSpecifics);
+        
+    final String title = isFavorite ? "❤️ Artikel Difavoritkan!" : "🤍 Favorit Dihapus.";
+    final String articleTitleSnippet = widget.article.title.length > 30 
+      ? '${widget.article.title.substring(0, 30)}...' 
+      : widget.article.title;
+      
+    final String body = isFavorite 
+        ? "Artikel '$articleTitleSnippet' telah ditambahkan ke favorit."
+        : "Artikel '$articleTitleSnippet' telah dihapus dari daftar favorit.";
+
+    await flutterLocalNotificationsPlugin.show(
+        // Menggunakan hash code URL sebagai ID unik notifikasi (pastikan positif)
+        widget.article.url.hashCode.abs(), 
+        title,
+        body,
+        platformChannelSpecifics,
+        payload: widget.article.url); 
+  }
+  // ===============================================================================
+
+  // ====================== MODIFIKASI FUNGSI FAVORIT (PANGGIL NOTIFIKASI) ======================
   void _toggleFavorite() async {
     final prefs = await SharedPreferences.getInstance();
     final String favoriteKey = '$_favoritePrefix${widget.article.url}';
@@ -84,27 +128,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       _isFavorite = !_isFavorite;
     });
 
-    // Simpan status baru
     await prefs.setBool(favoriteKey, _isFavorite);
 
-    // Tampilkan notifikasi
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isFavorite 
-              ? '❤️ Artikel ditambahkan ke favorit!' 
-              : '🤍 Artikel dihapus dari favorit.',
-        ),
-        backgroundColor: _isFavorite ? Colors.red.shade400 : Colors.blueGrey,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    // MENGGANTIKAN SNACKBAR/TOAST DENGAN NOTIFIKASI LOKAL
+    if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        _showFavoriteNotification(_isFavorite);
+    }
   }
-  // =================================================================================
+  // =============================================================================================
 
-  // LOGIKA DETEKSI SCROLL HINGGA BAWAH (Menggunakan hasClients)
   void _scrollListener() {
-    // GUARD CLAUSE: Pastikan controller sudah terpasang sebelum mengakses .position
     if (!_scrollController.hasClients) {
       return;
     }
@@ -112,7 +146,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.offset;
     
-    // Asumsi: Mencapai 95% dari total scroll sudah cukup untuk memberikan poin
     if (currentScroll >= maxScroll * 0.95) {
       if (!_pointsAwarded) {
         _awardUserPoints();
@@ -120,30 +153,25 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
 
-  // LOGIKA PENAMBAHAN POIN (Simulasi Penyimpanan DB)
   Future<void> _awardUserPoints() async {
-    // Cek ganda di awal fungsi (lebih aman)
     if (_pointsAwarded) return;
     
     final prefs = await SharedPreferences.getInstance();
     final String articleId = widget.article.url; 
     final int pointsToAdd = 10; 
     
-    // Cek apakah poin untuk artikel ini sudah pernah diberikan
     if (prefs.getBool('awarded_$articleId') == true) {
-       setState(() { _pointsAwarded = true; }); // Perbarui state jika ternyata sudah
+       setState(() { _pointsAwarded = true; }); 
       return;
     }
     
     int currentTotalPoints = prefs.getInt('user_total_points') ?? 0;
     
-    // 1. Simpan total poin baru
     await prefs.setInt('user_total_points', currentTotalPoints + pointsToAdd);
-    // 2. Tandai artikel ini sudah diberi poin
     await prefs.setBool('awarded_$articleId', true);
 
     setState(() {
-      _pointsAwarded = true; // Set status agar poin tidak ditambah ganda
+      _pointsAwarded = true; 
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -155,7 +183,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     );
   }
 
-  // FUNGSI MEMBUKA URL ASLI (Menggunakan url_launcher)
   Future<void> _launchUrl() async {
     final Uri uri = Uri.parse(widget.article.url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
@@ -168,14 +195,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
 
-  // Fungsi untuk memformat tanggal
   String _formatDate(DateTime? date) {
     if (date == null) return 'Tanggal tidak diketahui';
-    // Format ke waktu lokal Indonesia
     return DateFormat('EEEE, dd MMMM yyyy, HH:mm').format(date.toLocal()); 
   }
 
-  // Menggabungkan deskripsi dan konten
   String _getFullContent(String? description, String? content) {
     String finalContent = description ?? '';
     
@@ -203,24 +227,19 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        // ====================== PENAMBAHAN BARU: ACTION BUTTON (FAVORIT) ======================
         actions: [
           IconButton(
-            onPressed: _toggleFavorite, // Panggil fungsi toggle
+            onPressed: _toggleFavorite, 
             icon: Icon(
-              // Gunakan ikon penuh (favorite) jika sudah difavoritkan
               _isFavorite ? Icons.favorite : Icons.favorite_border,
-              // Warna MERAH jika difavoritkan, putiha (default AppBar) jika tidak
               color: _isFavorite ? Colors.red : Colors.white, 
               size: 28,
             ),
           ),
         ],
-        // =======================================================================================
       ),
       extendBodyBehindAppBar: true, 
       
-      // Menggunakan ScrollController untuk mendeteksi scroll
       body: SingleChildScrollView(
         controller: _scrollController, 
         child: Column(
@@ -255,16 +274,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      // Warna latar belakang disesuaikan dengan status/tema
                       color: _pointsAwarded ? Colors.green.withOpacity(0.1) : Colors.blue.shade50.withOpacity(0.5),
-                      // Border disesuaikan dengan status/tema
                       border: Border.all(color: _pointsAwarded ? Colors.green : Colors.blue, width: 1.5), 
-                      borderRadius: BorderRadius.circular(10), // Bentuk kotak seragam
+                      borderRadius: BorderRadius.circular(10), 
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Ikon disesuaikan dengan status/tema
                         Icon(_pointsAwarded ? Icons.check_circle : Icons.warning, color: _pointsAwarded ? Colors.green : Colors.cyan, size: 24),
                         const SizedBox(width: 10),
                         Expanded(
@@ -272,7 +288,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             _pointsAwarded
                                 ? "Poin sudah ditambahkan! Anda sudah menyelesaikan artikel ini."
                                 : "Gulir hingga akhir artikel untuk mendapatkan poin!",
-                            // Warna teks disesuaikan dengan status/tema
                             style: TextStyle(color: _pointsAwarded ? Colors.green : Colors.blueGrey, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -285,20 +300,20 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   // Tombol Lihat Sumber Asli (Aktif)
                   Center(
                     child: ElevatedButton.icon(
-                      onPressed: _launchUrl, // Panggil fungsi peluncur URL
+                      onPressed: _launchUrl, 
                       icon: const Icon(Icons.public, color: Colors.white),
                       label: const Text(
                         'Lihat Sumber Asli Artikel',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyan, // Warna tombol aksen cerah
+                        backgroundColor: Colors.cyan, 
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), 
                       ),
                     ),
                   ),
-                  const SizedBox(height: 100), // Tambahkan ruang ekstra di bawah untuk memastikan scroll mencapai akhir
+                  const SizedBox(height: 100), 
                 ],
               ),
             ),
