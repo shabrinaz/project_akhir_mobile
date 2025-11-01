@@ -76,7 +76,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Register User Baru')),
+      appBar: AppBar(
+        title: const Text('Register User Baru'),
+        backgroundColor: Colors.blue, // Biru cerah
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -87,7 +90,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _usernameController,
               decoration: const InputDecoration(
                 labelText: 'Username',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
               ),
             ),
             const SizedBox(height: 15),
@@ -95,7 +100,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
               ),
               obscureText: true,
             ),
@@ -104,14 +111,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onPressed: _register,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
+                backgroundColor: Colors.cyan, // Warna tombol aksen cerah
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
               ),
-              child: const Text('DAFTAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              child: const Text('DAFTAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Kembali ke Login
               },
-              child: const Text('Sudah punya akun? Kembali ke Login.'),
+              child: const Text('Sudah punya akun? Kembali ke Login.', 
+                style: TextStyle(color: Colors.blue)), // Warna teks tombol tema
             ),
           ],
         ),
