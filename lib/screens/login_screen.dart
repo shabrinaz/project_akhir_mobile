@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Aplikasi Berita Login'),
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: Colors.blue, // Biru cerah
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Icon(Icons.public, size: 80, color: Colors.blueAccent),
+              const Icon(Icons.public, size: 80, color: Colors.cyan), // Ikon warna aksen cerah
               const SizedBox(height: 20),
               const Text(
                 'Selamat Datang',
@@ -101,8 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _usernameController,
                 decoration: const InputDecoration(
                   labelText: 'Username',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)), // Bentuk kotak seragam
+                  ),
+                  prefixIcon: Icon(Icons.person, color: Colors.cyan), // Ikon warna aksen cerah
                 ),
               ),
               const SizedBox(height: 15),
@@ -112,8 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)), // Bentuk kotak seragam
+                  ),
+                  prefixIcon: Icon(Icons.lock, color: Colors.cyan), // Ikon warna aksen cerah
                 ),
               ),
               const SizedBox(height: 30),
@@ -122,8 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 onPressed: _handleLogin, 
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Colors.cyan, // Warna tombol aksen cerah
                   minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
                 ),
                 child: const Text('LOGIN', style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
@@ -138,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   );
                 },
-                child: const Text('Belum punya akun? Daftar sekarang!', style: TextStyle(fontSize: 16)),
+                child: const Text('Belum punya akun? Daftar sekarang!', 
+                  style: TextStyle(fontSize: 16, color: Colors.blue)), // Warna teks tombol tema
               ),
             ],
           ),

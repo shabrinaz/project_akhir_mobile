@@ -1,11 +1,10 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:project_akhir_mobile/screens/article_detail_screen.dart'; 
 import '../services/news_service.dart'; 
 import '../models/article_model.dart'; 
 
 class HomeScreen extends StatefulWidget {
-  // ✅ Kunci Perbaikan: Konstruktor HANYA membutuhkan Key.
-  // HomeScreen TIDAK memerlukan parameter apapun dari MainNavigationScreen.
   const HomeScreen({Key? key}) : super(key: key); 
 
   @override
@@ -86,8 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 📌 Perhatian: Tidak ada Scaffold atau AppBar di sini, 
-    // karena MainNavigationScreen sudah menyediakannya.
     
     return Column(
       children: <Widget>[
@@ -97,13 +94,18 @@ class _HomeScreenState extends State<HomeScreen> {
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Cari donasi, bisnis, dunia...',
-              prefixIcon: const Icon(Icons.search),
+              hintText: 'Cari Artikel',
+              prefixIcon: const Icon(Icons.search, color: Colors.cyan), // Warna aksen cerah
               border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0), // Bentuk kotak seragam
+                borderSide: BorderSide(color: Colors.blue.shade200, width: 1.5)
+              ),
+              focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.cyan, width: 2.0) // Warna aksen cerah
               ),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.clear),
+                icon: const Icon(Icons.clear, color: Colors.cyan), // Warna aksen cerah
                 onPressed: () {
                   _searchController.clear();
                   _applyTitleFilter(); 
@@ -118,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // 2. Tampilan List Artikel
         Expanded(
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator(color: Colors.cyan)) // Warna aksen cerah
               : _filteredArticles.isEmpty
                   ? Center(child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -127,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? "Tidak ada artikel yang lengkap ditemukan."
                           : "❌ Tidak ada artikel yang judulnya mengandung '${_searchController.text}'.",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.blueGrey, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ))
                   : RefreshIndicator( 
@@ -160,8 +162,12 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        elevation: 6, 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 4, // Menyeragamkan ketinggian Card
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          // Menambahkan border tipis dengan warna tema cerah
+          side: BorderSide(color: Colors.blue.shade100, width: 1.5),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -184,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               value: loadingProgress.expectedTotalBytes != null
                                   ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                                   : null,
-                              color: Colors.blueGrey,
+                              color: Colors.cyan, // Warna aksen cerah
                             ),
                           ),
                         );

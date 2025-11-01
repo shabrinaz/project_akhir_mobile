@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart'; // Untuk simulasi D
 import 'package:url_launcher/url_launcher.dart';             // Untuk membuka URL
 import '../models/article_model.dart';
 import 'package:intl/intl.dart'; 
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:url_launcher/url_launcher.dart'; // Sudah ada di atas, tapi tidak apa-apa
 
 class ArticleDetailScreen extends StatefulWidget {
   final Article article;
@@ -33,6 +35,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
   @override
   void dispose() {
+    // 🚩 PERBAIKAN BUG DISINI: Mengganti listener yang salah menjadi _scrollListener
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
@@ -51,9 +54,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
 
-  // 📌 PERBAIKAN LOGIKA DETEKSI SCROLL HINGGA BAWAH (Menggunakan hasClients)
+  // LOGIKA DETEKSI SCROLL HINGGA BAWAH (Menggunakan hasClients)
   void _scrollListener() {
-    // 💡 GUARD CLAUSE: Pastikan controller sudah terpasang sebelum mengakses .position
+    // GUARD CLAUSE: Pastikan controller sudah terpasang sebelum mengakses .position
     if (!_scrollController.hasClients) {
       return;
     }
@@ -69,7 +72,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
 
-  // 📌 LOGIKA PENAMBAHAN POIN (Simulasi Penyimpanan DB)
+  // LOGIKA PENAMBAHAN POIN (Simulasi Penyimpanan DB)
   Future<void> _awardUserPoints() async {
     // Cek ganda di awal fungsi (lebih aman)
     if (_pointsAwarded) return;
@@ -97,14 +100,14 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('🎉 Berhasil! Anda mendapatkan $pointsToAdd poin! Total poin Anda: ${currentTotalPoints + pointsToAdd}'),
+        content: Text('脂 Berhasil! Anda mendapatkan $pointsToAdd poin! Total poin Anda: ${currentTotalPoints + pointsToAdd}'),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 4),
       ),
     );
   }
 
-  // 📌 FUNGSI MEMBUKA URL ASLI (Menggunakan url_launcher)
+  // FUNGSI MEMBUKA URL ASLI (Menggunakan url_launcher)
   Future<void> _launchUrl() async {
     final Uri uri = Uri.parse(widget.article.url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
@@ -155,7 +158,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       ),
       extendBodyBehindAppBar: true, 
       
-      // 📌 Menggunakan ScrollController untuk mendeteksi scroll
+      // Menggunakan ScrollController untuk mendeteksi scroll
       body: SingleChildScrollView(
         controller: _scrollController, 
         child: Column(
@@ -175,7 +178,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  const Divider(height: 30, thickness: 1.5, color: Colors.blueGrey),
+                  const Divider(height: 30, thickness: 1.5, color: Colors.blue), // Warna Divider tema cerah
 
                   // Konten Artikel Penuh
                   Text(
@@ -190,21 +193,25 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _pointsAwarded ? Colors.green.withOpacity(0.1) : Colors.amber.withOpacity(0.1),
-                      border: Border.all(color: _pointsAwarded ? Colors.green : Colors.amber),
-                      borderRadius: BorderRadius.circular(8),
+                      // Warna latar belakang disesuaikan dengan status/tema
+                      color: _pointsAwarded ? Colors.green.withOpacity(0.1) : Colors.blue.shade50.withOpacity(0.5),
+                      // Border disesuaikan dengan status/tema
+                      border: Border.all(color: _pointsAwarded ? Colors.green : Colors.blue, width: 1.5), 
+                      borderRadius: BorderRadius.circular(10), // Bentuk kotak seragam
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(_pointsAwarded ? Icons.check_circle : Icons.warning, color: _pointsAwarded ? Colors.green : Colors.amber, size: 24),
+                        // Ikon disesuaikan dengan status/tema
+                        Icon(_pointsAwarded ? Icons.check_circle : Icons.warning, color: _pointsAwarded ? Colors.green : Colors.cyan, size: 24),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             _pointsAwarded
                                 ? "Poin sudah ditambahkan! Anda sudah menyelesaikan artikel ini."
                                 : "Gulir hingga akhir artikel untuk mendapatkan poin!",
-                            style: TextStyle(color: _pointsAwarded ? Colors.green : Colors.amber.shade800, fontWeight: FontWeight.bold),
+                            // Warna teks disesuaikan dengan status/tema
+                            style: TextStyle(color: _pointsAwarded ? Colors.green : Colors.blueGrey, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -223,9 +230,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.cyan, // Warna tombol aksen cerah
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
                       ),
                     ),
                   ),
@@ -242,7 +249,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   // Widget terpisah untuk gambar
   Widget _buildArticleImage(BuildContext context) {
     final imageUrl = widget.article.urlToImage;
-    return Container(
+    return SizedBox(
       height: 300,
       width: double.infinity,
       child: Stack(

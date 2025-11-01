@@ -46,13 +46,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   String _getTitle(int index) {
     switch (index) {
       case 0:
-        return 'Global Care News';
-      case 1: // Judul untuk halaman baru
-        return 'Donasi Kemanusiaan';
+        return 'Artikel';
+      case 1:
+        return 'Donasi';
       case 2:
-        return 'LBS (Lokasi)';
+        return 'Donasi Terdekat';
       case 3:
-        return 'Profil Pengguna';
+        return 'Profil';
       default:
         return '';
     }
@@ -63,8 +63,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_getTitle(_selectedIndex)),
-        backgroundColor: Colors.blueGrey,
-        // Contoh: Menambahkan tombol refresh/setting khusus di AppBar jika diperlukan
+        backgroundColor: Colors.blue, // Biru cerah
         actions: _selectedIndex == 0
             ? [
                 IconButton(
@@ -73,8 +72,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Tampilan di-refresh.')),
                     );
-                    // Catatan: Logika refresh data Home Screen yang sebenarnya ada di _fetchNews()
-                    // di dalam home_screen.dart. Ini hanya pemicu UI sederhana.
                   },
                 ),
               ]
@@ -86,7 +83,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       
-      // Bottom Navigation Bar (Diperbarui menjadi 4 item)
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed, // Diperlukan untuk 4 item atau lebih
         items: const <BottomNavigationBarItem>[
@@ -100,7 +97,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
-            label: 'LBS',
+            label: 'Jelajah',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -108,8 +105,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blueAccent,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.cyan, // Warna Aksen Cerah
+        unselectedItemColor: Colors.blueGrey.shade400, // Abu-abu yang lebih netral
         onTap: _onItemTapped,
       ),
     );

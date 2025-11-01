@@ -15,9 +15,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Data user placeholder (simulasi)
+  // Data user yang diperbarui
   final String _username = "Zeva Mila Sabrina";
-  final String _photoUrl = "https://i.pravatar.cc/150?img=12";
+  final String _nim = "124230043"; // Ditambahkan NIM
+  // Menggunakan URL gambar dari profil Rakamin (diambil dari tautan Google)
+  final String _photoUrl = "https://www.rakamin.com/profile/zeva-mila-sabrina-meo03scczfk3sefj"; 
 
   // Konversi
   final double _pointToRupiahRate = 10.0;
@@ -41,12 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _totalPoints = points;
     });
-    // LOGIKA TIMEZONE SUDAH DIHAPUS DARI SINI
   }
 
   // Menghitung nilai konversi
   String _convertPoints() {
-    // ... (Logika konversi tetap sama)
     double valueInRupiah = _totalPoints * _pointToRupiahRate;
     double finalValue;
     String symbol;
@@ -89,7 +89,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     // 1. Hapus session
     await prefs.remove('isLoggedIn');
-    // TIDAK PERLU menghapus kunci timezone lama
     
     // 2. Beri pesan
     ScaffoldMessenger.of(context).showSnackBar(
@@ -102,6 +101,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
     widget.onLogout();
   }
 
+  // Widget baru untuk Pesan dan Kesan
+  Widget _buildPesanKesanCard() {
+    const String pesan = "Mata kuliah pemrograman mobile dosennya gak jelasssssssssssssss, ngga pernah ngajar tiba tiba disuruh projek akhir";
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(10), // Bentuk kotak seragam
+        border: Border.all(color: Colors.red.shade300, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Pesan dan Kesan:",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            pesan,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
+            textAlign: TextAlign.justify,
+          ),
+        ],
+      ),
+    );
+  }
+
   // --- UI/Tampilan ---
 
   @override
@@ -111,11 +140,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          // 1. Foto Profil
+          // 1. Foto Profil (Dibuat bulat)
           CircleAvatar(
             radius: 60,
-            backgroundColor: Colors.blueGrey.shade100,
-            backgroundImage: NetworkImage(_photoUrl),
+            backgroundColor: Colors.blue.shade100,
+            // Menggunakan NetworkImage dari URL yang Anda berikan
+            backgroundImage: NetworkImage(_photoUrl), 
           ),
           const SizedBox(height: 15),
 
@@ -128,10 +158,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 5),
 
-          const Divider(height: 1, color: Colors.grey),
-          const SizedBox(height: 20),
+          // 2b. NIM (Ditambahkan)
+          Text(
+            'NIM: $_nim',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 30),
 
           // 3. Total Poin
           _buildInfoCard(
@@ -147,16 +184,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.account_balance_wallet,
             title: "Nilai Konversi Poin",
             value: _convertPoints(),
-            color: Colors.green,
+            color: Colors.cyan, 
           ),
           const SizedBox(height: 20),
 
           // 5. Pemilih Mata Uang (Dropdown)
           _buildCurrencySelector(),
-
           const SizedBox(height: 40),
           
-          // WIDGET PEMILIH ZONA WAKTU SUDAH DIHAPUS DARI SINI
+          // 2c. Pesan dan Kesan
+          _buildPesanKesanCard(),
+          const SizedBox(height: 30), 
 
           // 6. Tombol Logout
           ElevatedButton.icon(
@@ -164,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: const Icon(Icons.logout, color: Colors.white),
             label: const Text('Logout', style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.cyan, 
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -174,17 +212,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 20),
 
-          // Aturan Konversi
-          Text(
-            "Aturan Konversi: 10 Poin = Rp 100.00",
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-          ),
         ],
       ),
     );
   }
 
-  // ... (Widget _buildInfoCard dan _buildCurrencySelector tetap sama)
+  // Widget _buildInfoCard (Diperbarui untuk ukuran seragam)
   Widget _buildInfoCard({
     required IconData icon,
     required String title,
@@ -192,37 +225,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required Color color,
   }) {
     return Container(
+      width: double.infinity, // Memastikan lebar penuh
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(10), 
+        border: Border.all(color: color.withOpacity(0.5), width: 1.5), 
       ),
-      child: Row(
-        children: [
-          Icon(icon, size: 30, color: color),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: color,
+      child: SizedBox(
+        height: 80, // Menetapkan TINGGI MINIMUM agar seragam
+        child: Row(
+          children: [
+            Icon(icon, size: 30, color: color),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center, // Pusatkan vertikal
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -234,15 +272,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const Text("Pilih Mata Uang Konversi:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         Container(
+          width: double.infinity, // Memastikan lebar penuh
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.blueGrey),
+            border: Border.all(color: Colors.blue.shade300, width: 1.5), // Border warna tema cerah
             borderRadius: BorderRadius.circular(10),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _currency,
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.cyan), 
               hint: const Text("Pilih Mata Uang Konversi"),
               items: <String>['IDR', 'USD', 'CNY'].map((String value) {
                 return DropdownMenuItem<String>(
@@ -263,5 +302,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
-  // Tidak ada _buildTimezoneSelector di sini lagi
 }

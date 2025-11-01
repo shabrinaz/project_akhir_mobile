@@ -1,3 +1,4 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/main_navigation_screen.dart'; 
@@ -9,15 +10,9 @@ void main() async {
   // Wajib dipanggil pertama
   WidgetsFlutterBinding.ensureInitialized();
   
-  // PERBAIKAN: Gunakan initializeDateFormatting dengan locale 'id'.
-  // Fungsi ini didefinisikan dalam 'date_symbol_data_local.dart'
-  // atau 'date_symbol_data_all.dart', tetapi mengimpor 'date_symbol_data_local.dart' 
-  // sudah cukup untuk menemukan fungsi initializeDateFormatting.
-  // Jika 'id_ID' tidak ditemukan, coba 'id'.
   try {
     await initializeDateFormatting('id_ID', null); 
   } catch (e) {
-    // Sebagai fallback, coba inisialisasi locale yang lebih umum
     try {
       await initializeDateFormatting('id', null); 
     } catch (e2) {
@@ -25,7 +20,6 @@ void main() async {
     }
   }
 
-  // Set locale default.
   Intl.defaultLocale = 'id_ID'; 
   
   runApp(const MyApp());
@@ -39,7 +33,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Global Care News',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        // Ganti ke Colors.blue untuk warna yang lebih cerah
+        primarySwatch: Colors.blue, 
+        appBarTheme: const AppBarTheme(
+          // Tetapkan warna AppBar agar konsisten
+          backgroundColor: Colors.blue, // Biru cerah
+          foregroundColor: Colors.white,
+        ),
         useMaterial3: true,
       ),
       // AuthWrapper adalah gerbang utama

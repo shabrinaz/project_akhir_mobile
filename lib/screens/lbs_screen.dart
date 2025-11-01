@@ -112,7 +112,7 @@ class _LBSScreenState extends State<LBSScreen> {
                     fontSize: 14,
                     color: _locationStatus.startsWith('ERROR')
                         ? Colors.red
-                        : Colors.blueGrey,
+                        : Colors.blue, // Warna status sesuai tema
                   ),
                 ),
                 const Spacer(),
@@ -124,8 +124,9 @@ class _LBSScreenState extends State<LBSScreen> {
                     style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: Colors.cyan, // Warna tombol aksen cerah
                     minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
                   ),
                 ),
               ],
@@ -161,7 +162,7 @@ class _LBSScreenState extends State<LBSScreen> {
               point: _currentPosition,
               child: const Icon(
                 Icons.location_pin,
-                color: Colors.red,
+                color: Colors.cyan, // Warna Marker aksen cerah
                 size: 40.0,
               ),
             ),
