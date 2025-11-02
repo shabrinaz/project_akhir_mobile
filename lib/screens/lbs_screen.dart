@@ -101,13 +101,12 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  // Fungsi Pop-up Bottom Sheet yang Disederhanakan
   void _showLocationBottomSheet(String locationName) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Bentuk bulat di atas
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
         return Padding(
@@ -142,7 +141,7 @@ class _LBSScreenState extends State<LBSScreen> {
               
               const SizedBox(height: 20),
               
-              // Pesan Sederhana
+              // Pesan 
               Text(
                 'Lokasi ini adalah titik yang terdaftar sebagai tujuan donasi.',
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
@@ -154,7 +153,7 @@ class _LBSScreenState extends State<LBSScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Tutup pop-up
+                    Navigator.pop(context); 
                   },
                   child: const Text('TUTUP', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
@@ -231,7 +230,7 @@ class _LBSScreenState extends State<LBSScreen> {
         height: 80.0,
         point: latLng,
         child: GestureDetector(
-          onTap: () => _showLocationBottomSheet(name), // Memanggil BottomSheet baru
+          onTap: () => _showLocationBottomSheet(name), 
           child: const Icon(
             Icons.pin_drop, 
             color: Colors.pink,
