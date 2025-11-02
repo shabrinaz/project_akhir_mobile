@@ -1,4 +1,3 @@
-// lib/helpers/db_helper.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/user_model.dart';
@@ -40,19 +39,17 @@ class DatabaseHelper {
     );
   }
 
-  // Helper untuk Hashing Password (Keamanan)
+  // Hashing Password
   String _hashPassword(String password) {
     final bytes = utf8.encode(password);
     return sha256.convert(bytes).toString();
   }
 
-  // --- REGISTRASI ---
+  // REGISTRASI
   Future<int> registerUser(User user) async {
     final db = await database;
-    // Hash password sebelum disimpan
     final hashedPassword = _hashPassword(user.password);
     
-    // Pastikan user baru memiliki password yang sudah di-hash
     final userToInsert = User(
       username: user.username,
       password: hashedPassword,
@@ -60,16 +57,14 @@ class DatabaseHelper {
     );
 
     try {
-      // Jika berhasil, akan mengembalikan ID baris (ID > 0)
       return await db.insert('users', userToInsert.toMap(), conflictAlgorithm: ConflictAlgorithm.fail);
     } catch (e) {
-      // Jika username sudah ada (UNIQUE constraint)
       print("Registrasi gagal: Username sudah terdaftar. $e");
-      return -1; // Mengembalikan -1 sebagai indikasi kegagalan unik
+      return -1; 
     }
   }
 
-  // --- LOGIN ---
+  // LOGIN
   Future<User?> loginUser(String username, String password) async {
     final db = await database;
     final hashedPassword = _hashPassword(password);
@@ -81,13 +76,12 @@ class DatabaseHelper {
     );
 
     if (maps.isNotEmpty) {
-      return User.fromMap(maps.first); // Login berhasil
+      return User.fromMap(maps.first);
     } else {
-      return null; // Login gagal
+      return null;
     }
   }
 
-  // --- GET DATA USER BERDASARKAN ID ---
   Future<User?> getUserById(int id) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -103,7 +97,7 @@ class DatabaseHelper {
     }
   }
 
-  // --- TAMBAH POIN ---
+  // Tambah poin user
   Future<void> addPoints(int userId, int amount) async {
     final db = await database;
     await db.rawUpdate(

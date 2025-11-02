@@ -1,11 +1,9 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/main_navigation_screen.dart'; 
 import 'screens/login_screen.dart';
 import 'package:intl/intl.dart'; 
 import 'package:intl/date_symbol_data_local.dart'; 
-// ====================== PENAMBAHAN BARU ======================
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 // Global instance untuk kemudahan akses di file lain

@@ -1,5 +1,3 @@
-// lib/screens/lbs_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -13,30 +11,28 @@ class LBSScreen extends StatefulWidget {
 }
 
 class _LBSScreenState extends State<LBSScreen> {
-  // Koordinat default di sekitar UPN Veteran Yogyakarta (Babarsari)
   static const LatLng _defaultCenter = LatLng(-7.7770, 110.4072);
   LatLng _currentPosition = _defaultCenter;
   bool _isLoading = true;
   String _locationStatus = 'Memuat lokasi...';
 
-  // 1. Definisikan Lokasi Donasi beserta Nama
   final List<Map<String, dynamic>> _donationPoints = [
     {
       'name': 'Panti Asuhan Sinar Harapan',
       'latlng': const LatLng(-7.7730, 110.4000)
-    }, // Barat Laut UPN
+    }, 
     {
       'name': 'Masjid Kampus Al-Akbar',
       'latlng': const LatLng(-7.7755, 110.4125)
-    }, // Timur Laut UPN
+    }, 
     {
       'name': 'Posko PMI Babarsari',
       'latlng': const LatLng(-7.7810, 110.4100)
-    }, // Tenggara UPN
+    }, 
     {
       'name': 'Gereja St. Antonius',
       'latlng': const LatLng(-7.7800, 110.4030)
-    }, // Barat Daya UPN
+    }, 
   ];
 
   @override
@@ -45,10 +41,7 @@ class _LBSScreenState extends State<LBSScreen> {
     _fetchAndSetLocation();
   }
 
-  // --- Fungsi Lokasi (Tidak Berubah) ---
-
   Future<void> _fetchAndSetLocation() async {
-    // ... (Fungsi ini tidak berubah, hanya isinya yang dipersingkat)
     setState(() {
       _isLoading = true;
       _locationStatus = 'Memeriksa izin dan layanan lokasi...';
@@ -56,7 +49,6 @@ class _LBSScreenState extends State<LBSScreen> {
 
     try {
       final position = await _determinePosition();
-
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
         _locationStatus =
@@ -80,7 +72,6 @@ class _LBSScreenState extends State<LBSScreen> {
   }
 
   Future<Position> _determinePosition() async {
-    // ... (Fungsi ini tidak berubah)
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -110,7 +101,7 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  // 2. Fungsi untuk menampilkan SnackBar
+  // SnackBar
   void _showLocationPopup(String locationName) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -124,16 +115,15 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  // --- UI/Tampilan (Tidak Berubah) ---
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Bagian Peta
+        // Peta
         Expanded(flex: 4, child: _buildMap()),
 
-        // Bagian Status dan Tombol
+        // Status dan Tombol
         Expanded(
           flex: 1,
           child: Padding(
@@ -148,7 +138,7 @@ class _LBSScreenState extends State<LBSScreen> {
                     fontSize: 14,
                     color: _locationStatus.startsWith('ERROR')
                         ? Colors.red
-                        : Colors.blue, // Warna status sesuai tema
+                        : Colors.blue, 
                   ),
                 ),
                 const Spacer(),
@@ -160,10 +150,10 @@ class _LBSScreenState extends State<LBSScreen> {
                     style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.cyan, // Warna tombol aksen cerah
+                    backgroundColor: Colors.cyan, 
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ],
@@ -176,7 +166,6 @@ class _LBSScreenState extends State<LBSScreen> {
 
   // Widget Peta
   Widget _buildMap() {
-    // 3. Buat daftar marker donasi dengan GestureDetector
     final List<Marker> donationMarkers = _donationPoints.map((point) {
       final String name = point['name'];
       final LatLng latLng = point['latlng'];
@@ -185,32 +174,28 @@ class _LBSScreenState extends State<LBSScreen> {
         width: 80.0,
         height: 80.0,
         point: latLng,
-        // Gunakan GestureDetector untuk menangani tap/tekan
         child: GestureDetector(
-          onTap: () => _showLocationPopup(name), // Panggil fungsi pop-up
+          onTap: () => _showLocationPopup(name),
           child: const Icon(
-            Icons.pin_drop, // Ikon donasi
-            color: Colors.pink, // Warna Marker yang berbeda untuk donasi
+            Icons.pin_drop, 
+            color: Colors.pink,
             size: 40.0,
           ),
         ),
       );
     }).toList();
 
-    // Tambahkan marker posisi saat ini (tidak bisa ditekan)
     final List<Marker> allMarkers = [
-      // Marker Posisi Saat Ini
       Marker(
         width: 80.0,
         height: 80.0,
         point: _currentPosition,
         child: const Icon(
           Icons.location_pin,
-          color: Colors.cyan, // Marker Posisi Saat Ini (warna cyan)
+          color: Colors.cyan, 
           size: 40.0,
         ),
       ),
-      // Tambahkan Marker Lokasi Donasi
       ...donationMarkers,
     ];
 
@@ -220,15 +205,12 @@ class _LBSScreenState extends State<LBSScreen> {
         initialZoom: 14.0,
       ),
       children: [
-        // Tile Layer (Map Tiles dari OpenStreetMap)
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.example.projectAkhirMobile',
         ),
-
-        // MarkerLayer
         MarkerLayer(
-          markers: allMarkers, // Gunakan daftar semua marker
+          markers: allMarkers, 
         ),
       ],
     );

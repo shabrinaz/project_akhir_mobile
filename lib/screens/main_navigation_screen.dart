@@ -1,15 +1,10 @@
-// lib/screens/main_navigation_screen.dart
-
 import 'package:flutter/material.dart';
-// Import semua halaman yang akan ditampilkan di Bottom Nav Bar
 import 'home_screen.dart'; 
 import 'lbs_screen.dart';
 import 'profile_screen.dart';
-// Import halaman baru
 import 'donation_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  // 📌 Callback wajib dari AuthWrapper untuk memicu navigasi ke LoginScreen
   final VoidCallback onLogout; 
   const MainNavigationScreen({Key? key, required this.onLogout}) : super(key: key);
 
@@ -26,12 +21,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi list widget
     _widgetOptions = <Widget>[
       const HomeScreen(),
-      const DonationScreen(), // Halaman baru di Index 1
+      const DonationScreen(), 
       const LBSScreen(),
-      // Meneruskan callback onLogout dari AuthWrapper ke ProfileScreen
       ProfileScreen(onLogout: widget.onLogout), 
     ];
   }
@@ -42,7 +35,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
   
-  // Menentukan AppBar berdasarkan halaman yang aktif
   String _getTitle(int index) {
     switch (index) {
       case 0:
@@ -63,7 +55,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_getTitle(_selectedIndex)),
-        backgroundColor: Colors.blue, // Biru cerah
+        backgroundColor: Colors.blue,
         actions: _selectedIndex == 0
             ? [
                 IconButton(
@@ -77,21 +69,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               ]
             : null,
       ),
-      
-      // Tampilkan halaman yang dipilih
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Diperlukan untuk 4 item atau lebih
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.newspaper),
+            label: 'Artikel',
           ),
-          BottomNavigationBarItem( // Item baru
+          BottomNavigationBarItem( 
             icon: Icon(Icons.favorite),
             label: 'Donasi',
           ),
@@ -105,8 +95,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.cyan, // Warna Aksen Cerah
-        unselectedItemColor: Colors.blueGrey.shade400, // Abu-abu yang lebih netral
+        selectedItemColor: Colors.cyan, 
+        unselectedItemColor: Colors.blueGrey.shade400, 
         onTap: _onItemTapped,
       ),
     );

@@ -18,7 +18,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Data user yang diperbarui
   final String _username = "Zeva Mila Sabrina";
   final String _nim = "124230043"; // Ditambahkan NIM
-  // Catatan: URL foto dihapus dan diganti dengan AssetImage di bagian build()
   
   // Konversi
   final double _pointToRupiahRate = 10.0;
@@ -102,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Widget baru untuk Pesan dan Kesan
   Widget _buildPesanKesanCard() {
-    const String pesan = "Mata kuliah pemrograman mobile dosennya gak jelasssssssssssssss, ngga pernah ngajar tiba tiba disuruh projek akhir";
+    const String pesan = "Sangat menantang, alhamdulillah masih waras";
 
     return Container(
       width: double.infinity,

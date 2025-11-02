@@ -1,22 +1,14 @@
-// lib/screens/article_detail_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Untuk simulasi DB/Poin
 import 'package:url_launcher/url_launcher.dart';             // Untuk membuka URL
 import '../models/article_model.dart';
 import 'package:intl/intl.dart'; 
 import 'package:intl/date_symbol_data_local.dart';
-// ====================== IMPOR UNTUK NOTIFIKASI ======================
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// Mengasumsikan Anda telah menambahkan instance global ini di lib/main.dart
-// Note: Karena saya tidak dapat memverifikasi main.dart, saya asumsikan ia diimpor.
-// Jika main.dart tidak memiliki instance global, ini akan menyebabkan error.
 import '../main.dart'; 
-// ====================================================================
 
 class ArticleDetailScreen extends StatefulWidget {
   final Article article;
-
   const ArticleDetailScreen({super.key, required this.article});
 
   @override
@@ -24,15 +16,11 @@ class ArticleDetailScreen extends StatefulWidget {
 }
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
-  // Controller untuk mendeteksi posisi scroll
   late ScrollController _scrollController;
-  // Status apakah poin sudah diberikan untuk artikel ini
   bool _pointsAwarded = false; 
   
-  // ====================== FAVORIT STATE ======================
-  bool _isFavorite = false; // Status apakah artikel ini sudah difavoritkan
-  static const String _favoritePrefix = 'is_favorite_'; // Prefix untuk key SharedPreferences
-  // ===========================================================
+  bool _isFavorite = false; 
+  static const String _favoritePrefix = 'is_favorite_'; 
 
   @override
   void initState() {
@@ -71,23 +59,19 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       });
     }
   }
-  
-  // ====================== FUNGSI BARU: SHOW NOTIFIKASI LOKAL ======================
+
   Future<void> _showFavoriteNotification(bool isFavorite) async {
-    // Detail untuk Android
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-            'favorite_channel_id', // ID unik Channel
-            'Notifikasi Favorit Artikel', // Nama Channel
+            'favorite_channel_id', 
+            'Notifikasi Favorit Artikel', 
             channelDescription: 'Memberikan notifikasi saat artikel ditambahkan/dihapus dari favorit.',
             importance: Importance.high, 
             priority: Priority.high,
             ticker: 'favorite_ticker',
-            // Warna notifikasi yang sesuai dengan tema biru
             color: Colors.blue 
         );
         
-    // Detail untuk iOS/macOS
     const DarwinNotificationDetails darwinPlatformChannelSpecifics =
         DarwinNotificationDetails(
           presentAlert: true,
@@ -100,7 +84,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         iOS: darwinPlatformChannelSpecifics,
         macOS: darwinPlatformChannelSpecifics);
         
-    final String title = isFavorite ? "❤️ Artikel Difavoritkan!" : "🤍 Favorit Dihapus.";
+    final String title = isFavorite ? "Artikel Difavoritkan!" : "Favorit Dihapus.";
     final String articleTitleSnippet = widget.article.title.length > 30 
       ? '${widget.article.title.substring(0, 30)}...' 
       : widget.article.title;
@@ -110,16 +94,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         : "Artikel '$articleTitleSnippet' telah dihapus dari daftar favorit.";
 
     await flutterLocalNotificationsPlugin.show(
-        // Menggunakan hash code URL sebagai ID unik notifikasi (pastikan positif)
         widget.article.url.hashCode.abs(), 
         title,
         body,
         platformChannelSpecifics,
         payload: widget.article.url); 
   }
-  // ===============================================================================
 
-  // ====================== MODIFIKASI FUNGSI FAVORIT (PANGGIL NOTIFIKASI) ======================
   void _toggleFavorite() async {
     final prefs = await SharedPreferences.getInstance();
     final String favoriteKey = '$_favoritePrefix${widget.article.url}';
@@ -130,13 +111,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
     await prefs.setBool(favoriteKey, _isFavorite);
 
-    // MENGGANTIKAN SNACKBAR/TOAST DENGAN NOTIFIKASI LOKAL
     if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         _showFavoriteNotification(_isFavorite);
     }
   }
-  // =============================================================================================
 
   void _scrollListener() {
     if (!_scrollController.hasClients) {
@@ -176,7 +155,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('脂 Berhasil! Anda mendapatkan $pointsToAdd poin! Total poin Anda: ${currentTotalPoints + pointsToAdd}'),
+        content: Text('Anda mendapatkan $pointsToAdd poin! Total poin Anda: ${currentTotalPoints + pointsToAdd}'),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 4),
       ),
@@ -297,13 +276,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   
                   const SizedBox(height: 30),
 
-                  // Tombol Lihat Sumber Asli (Aktif)
+                  // Tombol Lihat Sumber Asli
                   Center(
                     child: ElevatedButton.icon(
                       onPressed: _launchUrl, 
                       icon: const Icon(Icons.public, color: Colors.white),
                       label: const Text(
-                        'Lihat Sumber Asli Artikel',
+                        'Lihat Artikel Selengkapnya',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -323,7 +302,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     );
   }
   
-  // Widget terpisah untuk gambar
+  // Gambar
   Widget _buildArticleImage(BuildContext context) {
     final imageUrl = widget.article.urlToImage;
     return SizedBox(

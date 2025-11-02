@@ -1,4 +1,3 @@
-// lib/helpers/session_manager.dart
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager {
@@ -12,19 +11,19 @@ class SessionManager {
     await prefs.setInt(_userIdKey, userId);
   }
 
-  // Mengecek apakah user sudah login
+  // Mengecek apakah user sudah login?
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_isLoggedInKey) ?? false;
   }
   
-  // Mengambil ID pengguna yang sedang login
+  // Mengambil ID pengguna yg login
   Future<int?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(_userIdKey);
   }
 
-  // Menghapus sesi saat logout
+  // Menghapus sesi
   Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_isLoggedInKey);

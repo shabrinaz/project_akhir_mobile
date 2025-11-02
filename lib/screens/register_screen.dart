@@ -1,8 +1,6 @@
-// lib/screens/register_screen.dart (Kode Lengkap dan Sudah Diperbaiki)
-
 import 'package:flutter/material.dart';
-import '../helpers/db_helper.dart'; // Pastikan path ini benar
-import '../models/user_model.dart'; // Pastikan path ini benar
+import '../helpers/db_helper.dart'; 
+import '../models/user_model.dart'; 
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -36,12 +34,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     
-    // --- OPERASI ASYNC DIMULAI ---
     final newUser = User(username: username, password: password);
     final result = await _dbHelper.registerUser(newUser);
-    // --- OPERASI ASYNC SELESAI ---
 
-    // Gunakan if (mounted) setelah await
     if (mounted) {
       if (result > 0) {
         // Registrasi Berhasil
@@ -57,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // Gagal: Username sudah ada
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('❌ Gagal: Username sudah digunakan.'),
+            content: Text('Gagal: Username sudah digunakan.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -65,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // Gagal lainnya (misalnya error database)
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('❌ Registrasi Gagal. Coba lagi.'),
+            content: Text('Registrasi Gagal. Coba lagi.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -78,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register User Baru'),
-        backgroundColor: Colors.blue, // Biru cerah
+        backgroundColor: Colors.blue, 
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -111,17 +106,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onPressed: _register,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                backgroundColor: Colors.cyan, // Warna tombol aksen cerah
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
+                backgroundColor: Colors.cyan, 
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), 
               ),
               child: const Text('DAFTAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Kembali ke Login
+                Navigator.of(context).pop(); 
               },
               child: const Text('Sudah punya akun? Kembali ke Login.', 
-                style: TextStyle(color: Colors.blue)), // Warna teks tombol tema
+                style: TextStyle(color: Colors.blue)), 
             ),
           ],
         ),

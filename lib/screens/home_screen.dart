@@ -1,4 +1,3 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:project_akhir_mobile/screens/article_detail_screen.dart'; 
 import '../services/news_service.dart'; 
@@ -26,8 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchNews();
   }
 
-  // --- Fungsi Data dan Logika ---
-
   Future<void> _fetchNews() async {
     setState(() {
       _isLoading = true;
@@ -53,10 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   
-  // FUNGSI FILTER JUDUL (Lokal)
+  // Fungsi buat filter judul
   void _applyTitleFilter() {
     final query = _searchController.text.toLowerCase().trim();
-    
     if (query.isEmpty) {
       _filteredArticles = _allArticles;
     } else {
@@ -64,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return article.title.toLowerCase().contains(query);
       }).toList();
     }
-    
     setState(() {});
   }
 
@@ -81,14 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- UI/Tampilan ---
-
   @override
   Widget build(BuildContext context) {
     
     return Column(
       children: <Widget>[
-        // 1. Fitur Searching
+        // Fitur Searching
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: TextField(
@@ -117,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        // 2. Tampilan List Artikel
+        // Tampilan List Artikel
         Expanded(
           child: _isLoading
               ? Center(child: CircularProgressIndicator(color: Colors.cyan)) // Warna aksen cerah
@@ -147,10 +140,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget Item List (Gambar Atas, Judul Bawah)
+  // Widget Item List
   Widget _buildArticleCard(BuildContext context, Article article) {
     final imageUrl = article.urlToImage;
-    
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -162,16 +154,14 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        elevation: 4, // Menyeragamkan ketinggian Card
+        elevation: 4, 
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          // Menambahkan border tipis dengan warna tema cerah
           side: BorderSide(color: Colors.blue.shade100, width: 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Gambar Atas
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: imageUrl != null && imageUrl.isNotEmpty
@@ -190,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               value: loadingProgress.expectedTotalBytes != null
                                   ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                                   : null,
-                              color: Colors.cyan, // Warna aksen cerah
+                              color: Colors.cyan, 
                             ),
                           ),
                         );
@@ -205,8 +195,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.grey[200],
                       child: const Center(child: Text("Gambar Tidak Tersedia", style: TextStyle(color: Colors.grey)))),
             ),
-            
-            // Judul Bawah
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(

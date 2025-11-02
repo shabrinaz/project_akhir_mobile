@@ -1,10 +1,7 @@
-// lib/screens/donation_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Definisi model sederhana untuk Organisasi Donasi
 class DonationOrg {
   final String title;
   final DateTime deadlineUtc;
@@ -27,7 +24,7 @@ class DonationScreen extends StatefulWidget {
 }
 
 class _DonationScreenState extends State<DonationScreen> {
-  // Data Donasi dalam UTC
+  // UTC
   final List<DonationOrg> _donationOrganizations = [
     DonationOrg(
       title: 'Unicef',
@@ -57,7 +54,6 @@ class _DonationScreenState extends State<DonationScreen> {
 
   String _selectedTimezoneKey = 'WIB'; // Default ke WIB
 
-  // Mapping untuk Timezone: Key -> {Display Name, Offset dari UTC dalam jam}
   final Map<String, dynamic> _timezones = {
     'WIB': {'name': 'WIB (UTC+7)', 'offsetHours': 7},
     'WITA': {'name': 'WITA (UTC+8)', 'offsetHours': 8},
@@ -71,7 +67,6 @@ class _DonationScreenState extends State<DonationScreen> {
     _loadTimezone();
   }
   
-  // Fungsi untuk memuat timezone yang dipilih pengguna
   Future<void> _loadTimezone() async {
     final prefs = await SharedPreferences.getInstance();
     final savedTimezone = prefs.getString('donation_timezone') ?? 'WIB'; 
@@ -83,7 +78,7 @@ class _DonationScreenState extends State<DonationScreen> {
     }
   }
   
-  // FUNGSI UNTUK MENGUBAH TIMEZONE
+  // Mengubah timezone
   void _onTimezoneChange(String? newTimezoneKey) async {
     if (newTimezoneKey != null) {
       final prefs = await SharedPreferences.getInstance();
@@ -94,7 +89,6 @@ class _DonationScreenState extends State<DonationScreen> {
           _selectedTimezoneKey = newTimezoneKey;
         });
         
-        // Mengatasi bug LocaleDataException
         final String tzDisplayName = _timezones[newTimezoneKey]!['name'];
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Zona waktu donasi diubah ke $tzDisplayName')),
@@ -103,8 +97,7 @@ class _DonationScreenState extends State<DonationScreen> {
     }
   }
 
-
-  // MENGUBAH FUNGSI INI UNTUK MENGHASILKAN STRING YANG DAPAT DI-SPLIT
+// Buat split tanggal dan jam
   String _formatDeadline(DateTime utcTime) {
     
     final tzData = _timezones[_selectedTimezoneKey] ?? _timezones['WIB']!;
@@ -121,58 +114,51 @@ class _DonationScreenState extends State<DonationScreen> {
     return '$datePart|$timePart|$tzName'; 
   }
 
-  // Widget untuk menampilkan Card Donasi (Disesuaikan untuk List View 1 Kolom)
   Widget _buildDonationCard(DonationOrg org) {
     final formattedDeadline = _formatDeadline(org.deadlineUtc);
-    final parts = formattedDeadline.split('|'); // [Date, Time, TZ Name]
+    final parts = formattedDeadline.split('|'); 
     final dateString = parts[0]; 
-    final timeString = '${parts[1]} ${parts[2]}'; // e.g., "11:04 WIB (UTC+7)"
+    final timeString = '${parts[1]} ${parts[2]}'; 
     
     final isClosed = org.deadlineUtc.isBefore(DateTime.now().toUtc());
-    // Memastikan kita memiliki akses ke MaterialColor shades
     final MaterialColor safeColor = org.color is MaterialColor ? org.color as MaterialColor : Colors.blue;
     final Color textColor = isClosed ? Colors.red : safeColor.shade800;
 
 
     return Card(
-      // Memberi margin di bawah setiap kartu untuk memisahkan item list
       margin: const EdgeInsets.only(bottom: 12.0), 
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Bentuk kotak seragam
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), 
       child: Container(
         decoration: BoxDecoration(
           color: isClosed ? Colors.grey[200] : org.color.withOpacity(0.08),
           borderRadius: BorderRadius.circular(10),
-          // Border warna tema untuk penyeragaman bentuk kotak
           border: Border.all(color: isClosed ? Colors.red : safeColor.shade400, width: 1.5), 
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Row( // Main Row: Icon + Judul/Deadline
-            crossAxisAlignment: CrossAxisAlignment.start, // Align ke atas
+          child: Row( 
+            crossAxisAlignment: CrossAxisAlignment.start, 
             children: [
-              // 1. ICON (Kiri)
+              //ikon
               Icon(org.icon, size: 36, color: safeColor),
               const SizedBox(width: 16),
-
-              // 2. JUDUL ORGANISASI & DEADLINE (Expanded Center)
+              //organisasinya
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // JUDUL ORGANISASI
                     Text(
-                      org.title, // KEEP THIS
+                      org.title, 
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: safeColor, // Menggunakan warna dari MaterialColor
+                        color: safeColor, 
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8), // Spasi antara judul dan deadline
-                    
-                    // LABEL DEADLINE
+                    const SizedBox(height: 8), 
+                    // deadline tanggal donasi ditutup
                     Text(
                       'Ditutup:',
                       style: TextStyle(
@@ -184,7 +170,6 @@ class _DonationScreenState extends State<DonationScreen> {
                     
                     const SizedBox(height: 2),
 
-                    // TANGGAL (Baris 1 Deadline)
                     Text(
                       isClosed ? 'DONASI SUDAH BERAKHIR' : dateString,
                       style: TextStyle(
@@ -194,7 +179,6 @@ class _DonationScreenState extends State<DonationScreen> {
                       ),
                     ),
 
-                    // WAKTU + ZONA WAKTU (Baris 2 Deadline)
                     if (!isClosed)
                       Text(
                         timeString, 
@@ -214,18 +198,17 @@ class _DonationScreenState extends State<DonationScreen> {
     );
   }
   
-  // Widget untuk Pemilihan Zona Waktu
   Widget _buildTimezoneSelector() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue.shade300, width: 1.5), // Border warna tema cerah
+        border: Border.all(color: Colors.blue.shade300, width: 1.5), 
         borderRadius: BorderRadius.circular(10),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedTimezoneKey,
-          icon: const Icon(Icons.access_time, color: Colors.cyan), // Ikon warna aksen cerah
+          icon: const Icon(Icons.access_time, color: Colors.cyan), 
           hint: const Text("Pilih Zona Waktu"),
           items: _timezones.keys.map((String key) {
             return DropdownMenuItem<String>(
@@ -239,7 +222,6 @@ class _DonationScreenState extends State<DonationScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -250,7 +232,6 @@ class _DonationScreenState extends State<DonationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // BARU: Pemilihan Zona Waktu
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -268,7 +249,6 @@ class _DonationScreenState extends State<DonationScreen> {
             ),
             const SizedBox(height: 20),
             
-            // LISTVIEW Donasi (Menggunakan Column untuk menampung daftar Card)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: _donationOrganizations.map((org) {

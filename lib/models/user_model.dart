@@ -1,5 +1,3 @@
-// lib/models/user_model.dart
-
 class User {
   int? id;
   final String username;
@@ -13,7 +11,6 @@ class User {
     this.points = 0,
   });
 
-  // Konversi objek User menjadi Map (untuk disimpan di DB)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -23,7 +20,6 @@ class User {
     };
   }
 
-  // Konversi Map (dari DB) menjadi objek User
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       id: map['id'],
