@@ -101,17 +101,73 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  // SnackBar
-  void _showLocationPopup(String locationName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Lokasi Donasi: $locationName',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        duration: const Duration(milliseconds: 1500),
-        backgroundColor: Colors.pink.shade700,
+  // Fungsi Pop-up Bottom Sheet yang Disederhanakan
+  void _showLocationBottomSheet(String locationName) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Bentuk bulat di atas
       ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Bagian Header
+              Row(
+                children: [
+                  const Icon(Icons.info, color: Colors.cyan, size: 28), // Ikon Info
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Informasi Lokasi Donasi',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                ],
+              ),
+              const Divider(),
+              
+              // Nama Lokasi
+              Text(
+                'Nama Lokasi:',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                locationName,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.pink),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Pesan Sederhana
+              Text(
+                'Lokasi ini adalah titik yang terdaftar sebagai tujuan donasi.',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Tombol Tutup
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Tutup pop-up
+                  },
+                  child: const Text('TUTUP', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, 
+                    minimumSize: const Size(double.infinity, 45),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -175,7 +231,7 @@ class _LBSScreenState extends State<LBSScreen> {
         height: 80.0,
         point: latLng,
         child: GestureDetector(
-          onTap: () => _showLocationPopup(name),
+          onTap: () => _showLocationBottomSheet(name), // Memanggil BottomSheet baru
           child: const Icon(
             Icons.pin_drop, 
             color: Colors.pink,
