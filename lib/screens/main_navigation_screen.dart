@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; 
+import 'home_screen.dart';
 import 'lbs_screen.dart';
 import 'profile_screen.dart';
 import 'donation_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  final VoidCallback onLogout; 
-  const MainNavigationScreen({Key? key, required this.onLogout}) : super(key: key);
+  final VoidCallback onLogout;
+  const MainNavigationScreen({Key? key, required this.onLogout})
+      : super(key: key);
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -14,18 +15,17 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
-  
-  // List halaman yang akan ditampilkan
-  late final List<Widget> _widgetOptions; 
+
+  late final List<Widget> _widgetOptions;
 
   @override
   void initState() {
     super.initState();
     _widgetOptions = <Widget>[
       const HomeScreen(),
-      const DonationScreen(), 
+      const DonationScreen(),
       const LBSScreen(),
-      ProfileScreen(onLogout: widget.onLogout), 
+      ProfileScreen(onLogout: widget.onLogout),
     ];
   }
 
@@ -34,7 +34,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _selectedIndex = index;
     });
   }
-  
+
   String _getTitle(int index) {
     switch (index) {
       case 0:
@@ -53,51 +53,67 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_getTitle(_selectedIndex)),
-        backgroundColor: Colors.blue,
-        actions: _selectedIndex == 0
-            ? [
-                IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.white),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Tampilan di-refresh.')),
-                    );
-                  },
-                ),
-              ]
-            : null,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70), // 🔼 LEBIH ATAS
+        child: AppBar(
+          backgroundColor: const Color(0xFF007BFF),
+          elevation: 0,
+          centerTitle: false,
+
+          // 🔵 NA IKAN TEXT AGAR LEBIH PAS
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8), // 🔼 NAIKIN SEDIKIT
+            child: Text(
+              _getTitle(_selectedIndex),
+              style: const TextStyle(
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          // 🔵 BAGIAN MELENGKUNG
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(24),
+            ),
+          ),
+
+          actions: _selectedIndex == 0
+              ? [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8), // NAIKIN ICON JUGA
+                    child: IconButton(
+                      icon: const Icon(Icons.refresh, color: Colors.white),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Tampilan di-refresh.')),
+                        );
+                      },
+                    ),
+                  )
+                ]
+              : null,
+        ),
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      
-      // Bottom Navigation Bar
+
+      body: _widgetOptions.elementAt(_selectedIndex),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper),
-            label: 'Artikel',
-          ),
-          BottomNavigationBarItem( 
-            icon: Icon(Icons.favorite),
-            label: 'Donasi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: 'Jelajah',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.cyan, 
-        unselectedItemColor: Colors.blueGrey.shade400, 
+        selectedItemColor: Colors.cyan,
+        unselectedItemColor: Colors.blueGrey,
         onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.newspaper), label: 'Artikel'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: 'Donasi'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.location_on), label: 'Jelajah'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+        ],
       ),
     );
   }

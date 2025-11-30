@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
-import '../helpers/db_helper.dart'; 
-import '../models/user_model.dart'; 
+import '../helpers/db_helper.dart';
+import '../models/user_model.dart';
+
+/// 🎨 GANTI WARNA DI SINI
+const Color kRegBg = Colors.white;
+const Color kRegBorder = Color(0xFF007BFF);
+const Color kRegButton = Color(0xFF007BFF);
+const Color kRegButtonText = Colors.white;
+const Color kRegHint = Colors.grey;
+const Color kRegLink = Color(0xFF007BFF);
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,111 +22,135 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  InputDecoration _field(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: kRegHint),
+      prefixIcon: Icon(icon, color: kRegBorder),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide(color: kRegBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide(color: kRegBorder, width: 2),
+      ),
+    );
   }
 
   void _register() async {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Username dan Password tidak boleh kosong!')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Input tidak boleh kosong")));
       return;
     }
-    
+
     final newUser = User(username: username, password: password);
     final result = await _dbHelper.registerUser(newUser);
 
-    if (mounted) {
-      if (result > 0) {
-        // Registrasi Berhasil
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Registrasi Berhasil! Silakan Login.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        // Kembali ke halaman Login
-        Navigator.of(context).pop();
-      } else if (result == -1) {
-        // Gagal: Username sudah ada
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal: Username sudah digunakan.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
-        // Gagal lainnya (misalnya error database)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registrasi Gagal. Coba lagi.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    if (result > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Registrasi Berhasil!"), backgroundColor: Colors.green),
+      );
+      Navigator.pop(context);
+    } else if (result == -1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Username sudah digunakan"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Registrasi gagal"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register User Baru'),
-        backgroundColor: Colors.blue, 
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+      backgroundColor: kRegBg,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const SizedBox(height: 80),
+
+              const Text(
+                "Daftar",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 50),
+
+              TextField(
+                controller: _usernameController,
+                decoration: _field("Nama Lengkap", Icons.person),
+              ),
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: _field("Password", Icons.lock),
+              ),
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _register,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kRegButton,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    "Daftar",
+                    style: TextStyle(
+                        color: kRegButtonText,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
+
+              const Spacer(),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Sudah punya akun?",
+                      style: TextStyle(color: Colors.grey)),
+                  const SizedBox(width: 6),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Text(
+                      "Login di sini",
+                      style: TextStyle(
+                          color: kRegLink, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
               ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _register,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                backgroundColor: Colors.cyan, 
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), 
-              ),
-              child: const Text('DAFTAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); 
-              },
-              child: const Text('Sudah punya akun? Kembali ke Login.', 
-                style: TextStyle(color: Colors.blue)), 
-            ),
-          ],
+
+              const SizedBox(height: 50),
+            ],
+          ),
         ),
       ),
     );

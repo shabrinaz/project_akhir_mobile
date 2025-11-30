@@ -1,14 +1,16 @@
 class User {
   int? id;
   final String username;
-  final String password; // Akan di-hash
+  final String password; // (boleh di-hash)
   int points;
+  String? profileImagePath; // 🔹 path foto profil
 
   User({
     this.id,
     required this.username,
     required this.password,
     this.points = 0,
+    this.profileImagePath,
   });
 
   Map<String, dynamic> toMap() {
@@ -17,6 +19,7 @@ class User {
       'username': username,
       'password': password,
       'points': points,
+      'profile_image_path': profileImagePath,
     };
   }
 
@@ -26,6 +29,7 @@ class User {
       username: map['username'],
       password: map['password'],
       points: map['points'] ?? 0,
+      profileImagePath: map['profile_image_path'],
     );
   }
 }

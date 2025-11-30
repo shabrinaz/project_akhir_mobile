@@ -13,13 +13,27 @@ class Article {
     this.content,
   });
 
+  // 🔹 Helper buat bersihin "[+xxx chars]"
+  static String? _cleanContent(dynamic rawContent) {
+    if (rawContent == null) return null;
+    String content = rawContent.toString();
+
+    // Hapus pola semacam " [+1234 chars]" di akhir teks
+    content = content.replaceAll(
+      RegExp(r'\s*\[\+\d+\schars\]$'),
+      '',
+    );
+
+    return content.trim();
+  }
+
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(
       title: json['title'] ?? 'Title Not Available',
-      url: json['url'] ?? '', 
-      description: json['description'], 
+      url: json['url'] ?? '',
+      description: json['description'],
       urlToImage: json['urlToImage'],
-      content: json['content'],
+      content: _cleanContent(json['content']), 
     );
   }
 }

@@ -2,6 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 🎨 WARNA — EDIT BAGIAN INI AJA ✔
+const Color kDonationBackground = Color(0xFFF4F8FF); // Background halaman
+const Color kTimezoneBorder = Color(0xFF007BFF); // Border dropdown
+const Color kTimezoneIcon = Color(0xFF007BFF); // Icon jam
+const Color kTimezoneText = Color(0xFF003B88); // Text zona waktu
+
+/// 🎨 Warna card tiap organisasi (ubah sesuka hati)
+const Color kUnicefColor = Color(0xFF2E89FF);
+const Color kPalestinaColor = Color(0xFFE53935);
+const Color kTimurTengahColor = Color(0xFF00897B);
+const Color kAfrikaColor = Color(0xFF43A047);
+
 class DonationOrg {
   final String title;
   final DateTime deadlineUtc;
@@ -24,35 +36,35 @@ class DonationScreen extends StatefulWidget {
 }
 
 class _DonationScreenState extends State<DonationScreen> {
-  // UTC
+  // 🔵 DATA ORGANISASI — sudah 2026 ✔
   final List<DonationOrg> _donationOrganizations = [
     DonationOrg(
       title: 'Unicef',
-      deadlineUtc: DateTime.utc(2025, 11, 5, 15, 0, 0), // 5 Nov 2025, 15:00 UTC
+      deadlineUtc: DateTime.utc(2026, 3, 5, 15, 0, 0),
       icon: Icons.child_care,
-      color: Colors.blue,
+      color: kUnicefColor,
     ),
     DonationOrg(
       title: 'Palestina',
-      deadlineUtc: DateTime.utc(2025, 11, 10, 12, 0, 0), // 10 Nov 2025, 12:00 UTC
+      deadlineUtc: DateTime.utc(2026, 3, 10, 12, 0, 0),
       icon: Icons.flag,
-      color: Colors.red,
+      color: kPalestinaColor,
     ),
     DonationOrg(
       title: 'Timur Tengah',
-      deadlineUtc: DateTime.utc(2025, 11, 15, 8, 0, 0), // 15 Nov 2025, 08:00 UTC
+      deadlineUtc: DateTime.utc(2026, 3, 15, 8, 0, 0),
       icon: Icons.mosque,
-      color: Colors.teal,
+      color: kTimurTengahColor,
     ),
     DonationOrg(
       title: 'Afrika',
-      deadlineUtc: DateTime.utc(2025, 11, 20, 20, 0, 0), // 20 Nov 2025, 20:00 UTC
+      deadlineUtc: DateTime.utc(2026, 3, 20, 20, 0, 0),
       icon: Icons.public,
-      color: Colors.green,
+      color: kAfrikaColor,
     ),
   ];
 
-  String _selectedTimezoneKey = 'WIB'; // Default ke WIB
+  String _selectedTimezoneKey = 'WIB';
 
   final Map<String, dynamic> _timezones = {
     'WIB': {'name': 'WIB (UTC+7)', 'offsetHours': 7},
@@ -60,160 +72,140 @@ class _DonationScreenState extends State<DonationScreen> {
     'WIT': {'name': 'WIT (UTC+9)', 'offsetHours': 9},
     'LONDON': {'name': 'London (UTC+0)', 'offsetHours': 0},
   };
-  
+
   @override
   void initState() {
     super.initState();
     _loadTimezone();
   }
-  
+
   Future<void> _loadTimezone() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedTimezone = prefs.getString('donation_timezone') ?? 'WIB'; 
-    
-    if (mounted) {
-      setState(() {
-        _selectedTimezoneKey = _timezones.containsKey(savedTimezone) ? savedTimezone : 'WIB';
-      });
-    }
-  }
-  
-  // Mengubah timezone
-  void _onTimezoneChange(String? newTimezoneKey) async {
-    if (newTimezoneKey != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('donation_timezone', newTimezoneKey); 
-      
-      if (mounted) {
-        setState(() {
-          _selectedTimezoneKey = newTimezoneKey;
-        });
-        
-        final String tzDisplayName = _timezones[newTimezoneKey]!['name'];
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Zona waktu donasi diubah ke $tzDisplayName')),
-        );
-      }
-    }
+    final saved = prefs.getString('donation_timezone') ?? 'WIB';
+    setState(() {
+      _selectedTimezoneKey =
+          _timezones.containsKey(saved) ? saved : 'WIB';
+    });
   }
 
-// Buat split tanggal dan jam
-  String _formatDeadline(DateTime utcTime) {
-    
-    final tzData = _timezones[_selectedTimezoneKey] ?? _timezones['WIB']!;
-    final offsetHours = tzData['offsetHours'] as int;
-    final tzName = tzData['name'] as String;
-    
-    final localTime = utcTime.add(Duration(hours: offsetHours));
-    
-    // Format: "EEEE, dd MMMM yyyy|HH:mm|TZ_NAME"
-    final datePart = DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(localTime); 
-    final timePart = DateFormat('HH:mm', 'id_ID').format(localTime);
-    
-    // Menggunakan '|' sebagai separator untuk split
-    return '$datePart|$timePart|$tzName'; 
-  }
+  void _onTimezoneChange(String? newKey) async {
+    if (newKey == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('donation_timezone', newKey);
 
-  Widget _buildDonationCard(DonationOrg org) {
-    final formattedDeadline = _formatDeadline(org.deadlineUtc);
-    final parts = formattedDeadline.split('|'); 
-    final dateString = parts[0]; 
-    final timeString = '${parts[1]} ${parts[2]}'; 
-    
-    final isClosed = org.deadlineUtc.isBefore(DateTime.now().toUtc());
-    final MaterialColor safeColor = org.color is MaterialColor ? org.color as MaterialColor : Colors.blue;
-    final Color textColor = isClosed ? Colors.red : safeColor.shade800;
+    setState(() => _selectedTimezoneKey = newKey);
 
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12.0), 
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), 
-      child: Container(
-        decoration: BoxDecoration(
-          color: isClosed ? Colors.grey[200] : org.color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: isClosed ? Colors.red : safeColor.shade400, width: 1.5), 
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row( 
-            crossAxisAlignment: CrossAxisAlignment.start, 
-            children: [
-              //ikon
-              Icon(org.icon, size: 36, color: safeColor),
-              const SizedBox(width: 16),
-              //organisasinya
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      org.title, 
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: safeColor, 
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8), 
-                    // deadline tanggal donasi ditutup
-                    Text(
-                      'Ditutup:',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: isClosed ? Colors.red : Colors.grey.shade700,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 2),
-
-                    Text(
-                      isClosed ? 'DONASI SUDAH BERAKHIR' : dateString,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isClosed ? Colors.red.shade800 : textColor,
-                      ),
-                    ),
-
-                    if (!isClosed)
-                      Text(
-                        timeString, 
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: textColor.withOpacity(0.8),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Zona waktu diubah ke ${_timezones[newKey]!['name']}",
         ),
       ),
     );
   }
-  
+
+  // Convert UTC → timezone terpilih
+  String _formatDeadline(DateTime utc) {
+    final tz = _timezones[_selectedTimezoneKey] ?? _timezones['WIB']!;
+    final local = utc.add(Duration(hours: tz['offsetHours']));
+
+    return "${DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(local)}|"
+        "${DateFormat('HH:mm', 'id_ID').format(local)}|"
+        "${tz['name']}";
+  }
+
+  // CARD ORGANISASI
+  Widget _buildDonationCard(DonationOrg org) {
+    final parts = _formatDeadline(org.deadlineUtc).split('|');
+    final date = parts[0];
+    final time = "${parts[1]} ${parts[2]}";
+
+    final bool isClosed = org.deadlineUtc.isBefore(DateTime.now().toUtc());
+
+    final Color baseColor = org.color;
+    final Color titleColor = baseColor;
+    final Color dateColor =
+        isClosed ? Colors.red : baseColor.withOpacity(0.9);
+    final Color timeColor = baseColor.withOpacity(0.8);
+
+    return Card(
+      elevation: 5,
+      margin: const EdgeInsets.only(bottom: 14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: baseColor.withOpacity(0.09),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: baseColor, width: 2),
+        ),
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            Icon(org.icon, size: 40, color: baseColor),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Judul organisasi
+                  Text(
+                    org.title,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: titleColor,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+
+                  // Teks "Ditutup" atau tanggal
+                  Text(
+                    isClosed ? "DONASI SUDAH DITUTUP" : date,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: dateColor,
+                    ),
+                  ),
+
+                  // Jam + zona waktu hanya kalau belum tutup
+                  if (!isClosed)
+                    Text(
+                      time,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: timeColor,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // DROPDOWN ZONA WAKTU
   Widget _buildTimezoneSelector() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue.shade300, width: 1.5), 
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kTimezoneBorder, width: 2),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedTimezoneKey,
-          icon: const Icon(Icons.access_time, color: Colors.cyan), 
-          hint: const Text("Pilih Zona Waktu"),
+          icon: Icon(Icons.access_time, color: kTimezoneIcon),
           items: _timezones.keys.map((String key) {
-            return DropdownMenuItem<String>(
+            return DropdownMenuItem(
               value: key,
-              child: Text(_timezones[key]!['name']),
+              child: Text(
+                _timezones[key]!['name'],
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
             );
           }).toList(),
           onChanged: _onTimezoneChange,
@@ -224,39 +216,43 @@ class _DonationScreenState extends State<DonationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _loadTimezone, 
+    return Container(
+      color: kDonationBackground,
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // TITLE + SELECTOR
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Zona Waktu:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue), // Warna biru cerah
+                Text(
+                  "Zona Waktu:",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: kTimezoneText,
+                  ),
                 ),
                 _buildTimezoneSelector(),
               ],
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 8),
+
             Text(
-              'Tanggal penutupan di bawah ini disesuaikan dengan zona waktu yang Anda pilih.',
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 20),
-            
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _donationOrganizations.map((org) {
-                return _buildDonationCard(org);
-              }).toList(),
+              "Tanggal penutupan disesuaikan dengan zona waktu yang Anda pilih.",
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
+
+            // LIST ORGANISASI
+            Column(
+              children: _donationOrganizations
+                  .map((org) => _buildDonationCard(org))
+                  .toList(),
+            ),
           ],
         ),
       ),

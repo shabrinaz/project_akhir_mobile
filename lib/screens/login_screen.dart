@@ -1,142 +1,176 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../helpers/db_helper.dart'; 
-import 'register_screen.dart'; 
+import '../helpers/db_helper.dart';
+import '../helpers/session_manager.dart';
+import '../models/user_model.dart';
+import 'register_screen.dart';
+
+/// 🎨 GANTI WARNA DI SINI SAJA
+const Color kBg = Color.fromARGB(255, 255, 255, 255);
+const Color kBorder = Color(0xFF0A73FF);
+const Color kButton = Color(0xFF0A73FF);
+const Color kHint = Colors.grey;
+const Color kTextButton = Color(0xFF0A73FF);
 
 class LoginScreen extends StatefulWidget {
-  final VoidCallback onLoginSuccess; 
+  final VoidCallback onLoginSuccess;
   const LoginScreen({Key? key, required this.onLoginSuccess}) : super(key: key);
-  
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final DatabaseHelper _dbHelper = DatabaseHelper();
-  
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  final _username = TextEditingController();
+  final _password = TextEditingController();
+  final _db = DatabaseHelper();
+  final _session = SessionManager();
+
+  InputDecoration _field(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: kHint),
+      prefixIcon: Icon(icon, color: kBorder),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25),
+        borderSide: const BorderSide(color: kBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25),
+        borderSide: const BorderSide(color: kBorder, width: 2),
+      ),
+    );
   }
 
-  // Login
-  Future<void> _handleLogin() async {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+  Future<void> _login() async {
+    final user = _username.text.trim();
+    final pass = _password.text.trim();
 
-    if (username.isEmpty || password.isEmpty) {
-       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Username dan Password tidak boleh kosong!')),
-        );
-      }
+    if (user.isEmpty || pass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Kolom tidak boleh kosong")),
+      );
       return;
     }
 
-    final user = await _dbHelper.loginUser(username, password);
+    final u = await _db.loginUser(user, pass);
 
-    if (mounted) {
-      if (user != null) {
-        // Jika user ditemukan => login berhasil
-        final prefs = await SharedPreferences.getInstance();
-        
-        // Simpan status login dan data user
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('username', user.username);
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login Berhasil! Selamat datang, ${user.username}')),
-        );
-        
-        widget.onLoginSuccess();
-      } else {
-        // Jika user tidak ditemukan => login gagal
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login Gagal. Username atau Password salah.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    if (u != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool("isLoggedIn", true);
+      await prefs.setString("username", u.username);
+
+      if (u.id != null) await _session.createLoginSession(u.id!);
+
+      widget.onLoginSuccess();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Username atau Password salah"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Donasi Sosial Virtual'),
-        backgroundColor: Colors.blue, // Biru cerah
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Icon(Icons.public, size: 80, color: Colors.cyan),
-              const SizedBox(height: 20),
-              const Text(
-                'Selamat Datang',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 30),
-              
-              // Input Username
-              TextField( 
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'Username',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+      backgroundColor: kBg,
+      body: SafeArea(
+        child: SingleChildScrollView(  // supaya tidak overflow di HP kecil
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                
+                const SizedBox(height: 40),
+
+                /// TITLE
+                const Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
-                  prefixIcon: Icon(Icons.person, color: Colors.cyan), 
                 ),
-              ),
-              const SizedBox(height: 15),
-              // Input Password 
-              TextField( 
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  prefixIcon: Icon(Icons.lock, color: Colors.cyan),
+
+                const SizedBox(height: 60),
+
+                /// FIELD USERNAME
+                TextField(
+                  controller: _username,
+                  decoration: _field("Nama Lengkap", Icons.person),
                 ),
-              ),
-              const SizedBox(height: 30),
-              
-              // Tombol Login
-              ElevatedButton(
-                onPressed: _handleLogin, 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyan,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), 
+
+                const SizedBox(height: 18),
+
+                /// FIELD PASSWORD
+                TextField(
+                  controller: _password,
+                  obscureText: true,
+                  decoration: _field("Password", Icons.lock),
                 ),
-                child: const Text('LOGIN', style: TextStyle(fontSize: 18, color: Colors.white)),
-              ),
-              
-              // Tombol Register
-              TextButton(
-                onPressed: () {
-                  // Navigasi ke RegisterScreen
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const RegisterScreen(),
+
+                const SizedBox(height: 32),
+
+                /// BUTTON LOGIN
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kButton,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
                     ),
-                  );
-                },
-                child: const Text('Belum punya akun? Daftar sekarang!', 
-                  style: TextStyle(fontSize: 16, color: Colors.blue)),
-              ),
-            ],
+                    child: const Text(
+                      "Login",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 80),
+
+                /// LINK REGISTER
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Belum punya akun?", style: TextStyle(color: Colors.grey)),
+                    const SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        );
+                      },
+                      child: const Text(
+                        "Daftar di sini",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: kTextButton,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
