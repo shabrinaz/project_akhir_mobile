@@ -3,6 +3,20 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+/// 🎨 WARNA – GANTI DI SINI SAJA
+const Color kLbsBackground = Color(0xFFF7F9FC);        // background halaman
+const Color kLbsCardBg = Colors.white;                 // background card peta
+const Color kLbsCardBorder = Color(0xFF007BFF);        // border card peta
+const Color kLbsCardShadow = Color(0x22007BFF);        // shadow card
+
+const Color kLbsStatusTextColor = Color(0xFF007BFF);   // teks status normal
+const Color kLbsStatusErrorColor = Colors.red;         // teks status error
+
+const Color kLbsButtonColor = Color(0xFF007BFF);       // tombol "Perbarui Lokasi"
+const Color kLbsButtonTextColor = Colors.white;        // teks tombol
+
+const Color kLbsUserMarkerColor = Colors.cyan;         // warna pin lokasi user
+
 class LBSScreen extends StatefulWidget {
   const LBSScreen({Key? key}) : super(key: key);
 
@@ -15,25 +29,6 @@ class _LBSScreenState extends State<LBSScreen> {
   LatLng _currentPosition = _defaultCenter;
   bool _isLoading = true;
   String _locationStatus = 'Memuat lokasi...';
-
-  final List<Map<String, dynamic>> _donationPoints = [
-    {
-      'name': 'Panti Asuhan Sinar Harapan',
-      'latlng': const LatLng(-7.7730, 110.4000)
-    }, 
-    {
-      'name': 'Masjid Kampus Al-Akbar',
-      'latlng': const LatLng(-7.7755, 110.4125)
-    }, 
-    {
-      'name': 'Posko PMI Babarsari',
-      'latlng': const LatLng(-7.7810, 110.4100)
-    }, 
-    {
-      'name': 'Gereja St. Antonius',
-      'latlng': const LatLng(-7.7800, 110.4030)
-    }, 
-  ];
 
   @override
   void initState() {
@@ -56,18 +51,17 @@ class _LBSScreenState extends State<LBSScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _locationStatus = 'ERROR: ${e.toString()}';
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Lokasi Gagal: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      setState(() {
+        _locationStatus = 'ERROR: ${e.toString()}';
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lokasi Gagal: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -86,7 +80,9 @@ class _LBSScreenState extends State<LBSScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Izin lokasi ditolak. Anda harus memberikan izin.');
+        return Future.error(
+          'Izin lokasi ditolak. Anda harus memberikan izin.',
+        );
       }
     }
 
@@ -101,158 +97,94 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  void _showLocationBottomSheet(String locationName) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Bagian Header
-              Row(
-                children: [
-                  const Icon(Icons.info, color: Colors.cyan, size: 28), // Ikon Info
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Informasi Lokasi Donasi',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-                  ),
-                ],
-              ),
-              const Divider(),
-              
-              // Nama Lokasi
-              Text(
-                'Nama Lokasi:',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                locationName,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.pink),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Pesan 
-              Text(
-                'Lokasi ini adalah titik yang terdaftar sebagai tujuan donasi.',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Tombol Tutup
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); 
-                  },
-                  child: const Text('TUTUP', style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, 
-                    minimumSize: const Size(double.infinity, 45),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
+  // ================== UI ==================
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Peta
-        Expanded(flex: 4, child: _buildMap()),
-
-        // Status dan Tombol
-        Expanded(
-          flex: 1,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  _locationStatus,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: _locationStatus.startsWith('ERROR')
-                        ? Colors.red
-                        : Colors.blue, 
-                  ),
+    return Container(
+      color: kLbsBackground,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: Column(
+          children: [
+            // ====== CARD PETA USER ======
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: kLbsCardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: kLbsCardBorder, width: 1.6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: kLbsCardShadow,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _fetchAndSetLocation,
-                  icon: const Icon(Icons.refresh, color: Colors.white),
-                  label: Text(
-                    _isLoading ? 'Memuat Peta...' : 'Perbarui Lokasi',
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.cyan, 
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: _buildMap(),
                 ),
-              ],
+              ),
             ),
-          ),
+
+            const SizedBox(height: 16),
+
+            // STATUS LOKASI
+            Text(
+              _locationStatus,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: _locationStatus.startsWith('ERROR')
+                    ? kLbsStatusErrorColor
+                    : kLbsStatusTextColor,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // TOMBOL PERBARUI LOKASI
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading ? null : _fetchAndSetLocation,
+                icon: const Icon(Icons.my_location),
+                label: Text(
+                  _isLoading ? 'Memuat Peta...' : 'Perbarui Lokasi',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: kLbsButtonTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kLbsButtonColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  // Widget Peta
+  // Widget Peta (hanya posisi user)
   Widget _buildMap() {
-    final List<Marker> donationMarkers = _donationPoints.map((point) {
-      final String name = point['name'];
-      final LatLng latLng = point['latlng'];
-
-      return Marker(
-        width: 80.0,
-        height: 80.0,
-        point: latLng,
-        child: GestureDetector(
-          onTap: () => _showLocationBottomSheet(name), 
-          child: const Icon(
-            Icons.pin_drop, 
-            color: Colors.pink,
-            size: 40.0,
-          ),
-        ),
-      );
-    }).toList();
-
-    final List<Marker> allMarkers = [
-      Marker(
-        width: 80.0,
-        height: 80.0,
-        point: _currentPosition,
-        child: const Icon(
-          Icons.location_pin,
-          color: Colors.cyan, 
-          size: 40.0,
-        ),
+    final Marker userMarker = Marker(
+      width: 80.0,
+      height: 80.0,
+      point: _currentPosition,
+      child: Icon(
+        Icons.location_pin,
+        color: kLbsUserMarkerColor,
+        size: 40.0,
       ),
-      ...donationMarkers,
-    ];
+    );
 
     return FlutterMap(
       options: MapOptions(
@@ -265,7 +197,7 @@ class _LBSScreenState extends State<LBSScreen> {
           userAgentPackageName: 'com.example.projectAkhirMobile',
         ),
         MarkerLayer(
-          markers: allMarkers, 
+          markers: [userMarker],
         ),
       ],
     );

@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import '../helpers/session_manager.dart';
 import '../helpers/db_helper.dart';
 import '../models/user_model.dart';
-import 'developer_screen.dart'; // <-- halaman baru
+import 'developer_screen.dart';
 
 /// 🎨 WARNA-WARNA PROFIL (UBAH DI SINI AJA)
 const Color kProfileBackgroundColor = Color(0xFFF7F9FC);
@@ -190,9 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading || _currentUser == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     final username = _currentUser!.username;
@@ -202,17 +200,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? File(profileImagePath)
             : null;
 
-    return Scaffold(
-      backgroundColor: kProfileBackgroundColor,
-      appBar: AppBar(
-        title: const Text(
-          "Profil",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF007BFF),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
+    // ❗️TIDAK ADA SCAFFOLD DI SINI – ini cuma isi body
+    return Container(
+      color: kProfileBackgroundColor,
+      child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           children: [
@@ -271,7 +262,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 28),
 
-            // ===== CARD TOTAL POIN =====
+            // TOTAL POIN
             Container(
               margin: const EdgeInsets.only(bottom: 14),
               decoration: BoxDecoration(
@@ -289,7 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // ===== CARD KONVERSI POIN =====
+            // KONVERSI POIN
             Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
@@ -349,7 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // ===== CARD DEVELOPER (klik → halaman baru) =====
+            // CARD DEVELOPER
             InkWell(
               onTap: () {
                 Navigator.of(context).push(
@@ -365,7 +356,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: kDeveloperCardBg,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: kDeveloperCardBorder, width: 1.6),
+                  border:
+                      Border.all(color: kDeveloperCardBorder, width: 1.6),
                 ),
                 child: Row(
                   children: [
@@ -384,7 +376,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // ===== TOMBOL LOGOUT =====
+            // LOGOUT BUTTON
             SizedBox(
               width: double.infinity,
               height: 48,

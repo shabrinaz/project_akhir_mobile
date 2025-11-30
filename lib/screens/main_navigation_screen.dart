@@ -4,6 +4,11 @@ import 'lbs_screen.dart';
 import 'profile_screen.dart';
 import 'donation_screen.dart';
 
+/// 🎨 THEME WARNA – konsisten dengan halaman lain
+const Color kNavBarColor = Color(0xFF007BFF);
+const Color kNavBarTextColor = Colors.white;
+const double kNavBarRadius = 22;
+
 class MainNavigationScreen extends StatefulWidget {
   final VoidCallback onLogout;
   const MainNavigationScreen({Key? key, required this.onLogout})
@@ -53,41 +58,45 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ==================== APPBAR ======================
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70), // 🔼 LEBIH ATAS
+        preferredSize: const Size.fromHeight(72),
         child: AppBar(
-          backgroundColor: const Color(0xFF007BFF),
+          backgroundColor: kNavBarColor,
+          automaticallyImplyLeading: false,
           elevation: 0,
-          centerTitle: false,
 
-          // 🔵 NA IKAN TEXT AGAR LEBIH PAS
+          // 🎯 Rounded supaya seragam
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(kNavBarRadius),
+            ),
+          ),
+
+          // 🎯 Title lebih atas & rapi
           title: Padding(
-            padding: const EdgeInsets.only(top: 8), // 🔼 NAIKIN SEDIKIT
+            padding: const EdgeInsets.only(top: 10),
             child: Text(
               _getTitle(_selectedIndex),
               style: const TextStyle(
-                fontSize: 23,
-                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: kNavBarTextColor,
               ),
             ),
           ),
 
-          // 🔵 BAGIAN MELENGKUNG
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(24),
-            ),
-          ),
-
+          // 🔄 Refresh hanya di halaman artikel
           actions: _selectedIndex == 0
               ? [
                   Padding(
-                    padding: const EdgeInsets.only(top: 8), // NAIKIN ICON JUGA
+                    padding: const EdgeInsets.only(top: 10, right: 4),
                     child: IconButton(
                       icon: const Icon(Icons.refresh, color: Colors.white),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Tampilan di-refresh.')),
+                          const SnackBar(
+                              content: Text('Tampilan artikel di-refresh.')),
                         );
                       },
                     ),
@@ -97,23 +106,39 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
       ),
 
+      // ==================== BODY ======================
       body: _widgetOptions.elementAt(_selectedIndex),
 
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.cyan,
-        unselectedItemColor: Colors.blueGrey,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.newspaper), label: 'Artikel'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.favorite), label: 'Donasi'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.location_on), label: 'Jelajah'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
+      // ==================== BOTTOM NAV ======================
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          currentIndex: _selectedIndex,
+          selectedItemColor: kNavBarColor,
+          unselectedItemColor: Colors.blueGrey.shade400,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.newspaper), label: 'Artikel'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.favorite), label: 'Donasi'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.location_on), label: 'Jelajah'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person), label: 'Profil'),
+          ],
+        ),
       ),
     );
   }

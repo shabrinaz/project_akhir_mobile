@@ -11,6 +11,25 @@ import '../helpers/session_manager.dart';
 import '../helpers/db_helper.dart';
 import '../models/user_model.dart';
 
+/// 🎨 WARNA – GANTI DI SINI SAJA
+const Color kDetailBackground = Color(0xFFF7F9FC);
+const Color kDetailCardBg = Colors.white;
+const Color kDetailCardBorder = Color(0xFF007BFF);
+const Color kDetailTitleColor = Colors.black87;
+const Color kDetailDividerColor = Color(0xFF007BFF);
+const Color kDetailTextColor = Colors.black87;
+
+const Color kDetailPointInfoBg = Color(0xFFE3F2FD);
+const Color kDetailPointInfoBorder = Color(0xFF007BFF);
+
+const Color kDetailPointInfoDoneBg = Color(0xFFE8F5E9);
+const Color kDetailPointInfoDoneBorder = Color(0xFF43A047);
+
+const Color kDetailButtonColor = Color(0xFF007BFF);
+const Color kDetailButtonTextColor = Colors.white;
+const Color kDetailFavoriteActive = Colors.red;
+const Color kDetailFavoriteInactive = Colors.white;
+
 class ArticleDetailScreen extends StatefulWidget {
   final Article article;
   const ArticleDetailScreen({super.key, required this.article});
@@ -21,7 +40,6 @@ class ArticleDetailScreen extends StatefulWidget {
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   bool _pointsAwarded = false;
-
   bool _isFavorite = false;
   static const String _favoritePrefix = 'is_favorite_';
 
@@ -41,7 +59,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     final String userKey = userId?.toString() ?? 'guest';
     final String articleId = widget.article.url;
 
-    // flag-nya sekarang per user + per artikel
     final flagKey = 'awarded_${userKey}_$articleId';
 
     if (prefs.getBool(flagKey) == true) {
@@ -137,7 +154,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
     final String flagKey = 'awarded_${userKey}_$articleId';
 
-    // kalau user ini sudah pernah dapat poin dari artikel ini
     if (prefs.getBool(flagKey) == true) {
       setState(() {
         _pointsAwarded = true;
@@ -148,7 +164,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     int newTotalPoints = pointsToAdd;
 
     if (userId != null) {
-      // update di DB
       User? user = await _dbHelper.getUserById(userId);
       if (user != null) {
         user.points += pointsToAdd;
@@ -157,7 +172,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       }
     }
 
-    // simpan flag di prefs supaya user ini nggak dapat poin dobel untuk artikel yang sama
     await prefs.setBool(flagKey, true);
 
     setState(() {
@@ -232,10 +246,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         _getFullContent(widget.article.description, widget.article.content);
 
     return Scaffold(
+      backgroundColor: kDetailBackground,
       appBar: AppBar(
-        title:
-            const Text("Detail Artikel", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.transparent,
+        title: const Text(
+          "Detail Artikel",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF007BFF),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
@@ -243,109 +260,154 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             onPressed: _toggleFavorite,
             icon: Icon(
               _isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: _isFavorite ? Colors.red : Colors.white,
-              size: 28,
+              color: _isFavorite
+                  ? kDetailFavoriteActive
+                  : kDetailFavoriteInactive,
+              size: 26,
             ),
           ),
         ],
       ),
-      extendBodyBehindAppBar: true,
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildArticleImage(context),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    widget.article.title,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
-                      height: 1.2,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Divider(
-                    height: 30,
-                    thickness: 1.5,
-                    color: Colors.blue,
-                  ),
-                  Text(
-                    fullTextContent,
-                    style: const TextStyle(fontSize: 17, height: 1.6),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(height: 25),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _pointsAwarded
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.blue.shade50.withOpacity(0.5),
-                      border: Border.all(
-                        color: _pointsAwarded ? Colors.green : Colors.blue,
-                        width: 1.5,
+        padding: const EdgeInsets.all(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: kDetailCardBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kDetailCardBorder, width: 1.4),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x22007BFF),
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Gambar artikel
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+                child: _buildArticleImage(context),
+              ),
+
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    // Judul
+                    Text(
+                      widget.article.title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        height: 1.3,
+                        color: kDetailTitleColor,
                       ),
-                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          _pointsAwarded
-                              ? Icons.check_circle
-                              : Icons.warning,
-                          color:
-                              _pointsAwarded ? Colors.green : Colors.cyan,
-                          size: 24,
+                    const SizedBox(height: 10),
+
+                    const Divider(
+                      height: 24,
+                      thickness: 1.2,
+                      color: kDetailDividerColor,
+                    ),
+
+                    // Konten
+                    Text(
+                      fullTextContent,
+                      style: const TextStyle(
+                        fontSize: 15.5,
+                        height: 1.6,
+                        color: kDetailTextColor,
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Info poin
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: _pointsAwarded
+                            ? kDetailPointInfoDoneBg
+                            : kDetailPointInfoBg,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _pointsAwarded
+                              ? kDetailPointInfoDoneBorder
+                              : kDetailPointInfoBorder,
+                          width: 1.4,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
                             _pointsAwarded
-                                ? "Poin sudah ditambahkan karena kamu membuka sumber artikel."
-                                : "Klik tombol 'Lihat Artikel Selengkapnya' untuk mendapatkan poin!",
-                            style: TextStyle(
-                              color: _pointsAwarded
-                                  ? Colors.green
-                                  : Colors.blueGrey,
-                              fontWeight: FontWeight.bold,
+                                ? Icons.check_circle
+                                : Icons.stars,
+                            color: _pointsAwarded
+                                ? kDetailPointInfoDoneBorder
+                                : kDetailPointInfoBorder,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              _pointsAwarded
+                                  ? "Poin sudah ditambahkan karena kamu membuka sumber artikel."
+                                  : "Klik tombol 'Lihat Artikel Selengkapnya' untuk mendapatkan poin!",
+                              style: TextStyle(
+                                color: _pointsAwarded
+                                    ? kDetailPointInfoDoneBorder
+                                    : Colors.blueGrey,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: _launchUrl,
-                      icon: const Icon(Icons.public, color: Colors.white),
-                      label: const Text(
-                        'Lihat Artikel Selengkapnya',
-                        style:
-                            TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyan,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 100),
-                ],
+
+                    const SizedBox(height: 24),
+
+                    // Tombol Lihat Sumber Asli
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        onPressed: _launchUrl,
+                        icon:
+                            const Icon(Icons.public, color: Colors.white),
+                        label: Text(
+                          'Lihat Artikel Selengkapnya',
+                          style: TextStyle(
+                            color: kDetailButtonTextColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kDetailButtonColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -354,7 +416,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   Widget _buildArticleImage(BuildContext context) {
     final imageUrl = widget.article.urlToImage;
     return SizedBox(
-      height: 300,
+      height: 220,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
@@ -366,22 +428,35 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               errorBuilder: (context, error, stackTrace) => Container(
                 color: Colors.grey[200],
                 child: const Center(
-                  child: Icon(Icons.broken_image,
-                      size: 80, color: Colors.grey),
+                  child: Icon(
+                    Icons.broken_image,
+                    size: 70,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             )
           else
             Container(
               color: Colors.grey[200],
-              child: const Center(child: Text("No Image")),
+              child: const Center(
+                child: Text(
+                  "No Image",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
             ),
+
+          // gradient tipis atas-bawah biar teks di atas gambar (kalau mau nanti)
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.black54, Colors.transparent],
+                colors: [
+                  Colors.black26,
+                  Colors.transparent,
+                ],
               ),
             ),
           ),
