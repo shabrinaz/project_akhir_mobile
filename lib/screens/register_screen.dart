@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../helpers/db_helper.dart';
 import '../models/user_model.dart';
 
-/// 🎨 GANTI WARNA DI SINI
 const Color kRegBg = Colors.white;
 const Color kRegBorder = Color(0xFF007BFF);
 const Color kRegButton = Color(0xFF007BFF);

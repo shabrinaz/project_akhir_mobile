@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import '../models/user_model.dart';
 
 class DatabaseHelper {
-  // Singleton
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();
@@ -28,8 +27,6 @@ class DatabaseHelper {
       path,
       version: _dbVersion,
       onCreate: _onCreate,
-      // kalau nanti mau upgrade versi, bisa pakai onUpgrade
-      // onUpgrade: _onUpgrade,
     );
   }
 
@@ -43,17 +40,9 @@ class DatabaseHelper {
         profile_image_path TEXT
       )
     ''');
-
-    // TODO: kalau kamu punya tabel lain (donasi, dsb) bikin juga di sini
   }
 
-  // ===================== USER =====================
 
-  /// Dipakai di RegisterScreen
-  /// return:
-  ///  >0  = berhasil (rowId)
-  ///  -1  = username sudah ada (UNIQUE constraint gagal)
-  ///   0  = error lain
   Future<int> registerUser(User user) async {
     final db = await database;
 
@@ -63,9 +52,8 @@ class DatabaseHelper {
         user.toMap(),
         conflictAlgorithm: ConflictAlgorithm.abort,
       );
-      return id; // > 0 kalau sukses
+      return id; 
     } on DatabaseException catch (e) {
-      // cek kalau error karena UNIQUE (username sudah dipakai)
       if (e.isUniqueConstraintError()) {
         return -1;
       }
@@ -75,12 +63,10 @@ class DatabaseHelper {
     }
   }
 
-  /// Kalau kamu pengin pakai nama insertUser juga, boleh pakai wrapper ini:
   Future<int> insertUser(User user) async {
     return registerUser(user);
   }
 
-  // Login: cari user berdasarkan username + password
   Future<User?> loginUser(String username, String password) async {
     final db = await database;
 
@@ -97,7 +83,6 @@ class DatabaseHelper {
     return null;
   }
 
-  // Ambil user berdasarkan ID
   Future<User?> getUserById(int id) async {
     final db = await database;
 
@@ -114,7 +99,6 @@ class DatabaseHelper {
     return null;
   }
 
-  // Update user (points, profileImagePath, dll)
   Future<int> updateUser(User user) async {
     final db = await database;
 
@@ -130,7 +114,6 @@ class DatabaseHelper {
     );
   }
 
-  // (opsional) hapus user
   Future<int> deleteUser(int id) async {
     final db = await database;
     return await db.delete(
@@ -140,7 +123,6 @@ class DatabaseHelper {
     );
   }
 
-  // (opsional) ambil semua user (buat debug)
   Future<List<User>> getAllUsers() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('users');

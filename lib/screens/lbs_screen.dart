@@ -3,19 +3,18 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-/// 🎨 WARNA – GANTI DI SINI SAJA
-const Color kLbsBackground = Color(0xFFF7F9FC);        // background halaman
-const Color kLbsCardBg = Colors.white;                 // background card peta
-const Color kLbsCardBorder = Color(0xFF007BFF);        // border card peta
-const Color kLbsCardShadow = Color(0x22007BFF);        // shadow card
+const Color kLbsBackground = Color(0xFFF7F9FC);        
+const Color kLbsCardBg = Colors.white;                 
+const Color kLbsCardBorder = Color(0xFF007BFF);        
+const Color kLbsCardShadow = Color(0x22007BFF);        
 
-const Color kLbsStatusTextColor = Color(0xFF007BFF);   // teks status normal
-const Color kLbsStatusErrorColor = Colors.red;         // teks status error
+const Color kLbsStatusTextColor = Color(0xFF007BFF);   
+const Color kLbsStatusErrorColor = Colors.red;        
 
-const Color kLbsButtonColor = Color(0xFF007BFF);       // tombol "Perbarui Lokasi"
-const Color kLbsButtonTextColor = Colors.white;        // teks tombol
+const Color kLbsButtonColor = Color(0xFF007BFF);       
+const Color kLbsButtonTextColor = Colors.white;        
 
-const Color kLbsUserMarkerColor = Colors.cyan;         // warna pin lokasi user
+const Color kLbsUserMarkerColor = Colors.cyan;         
 
 class LBSScreen extends StatefulWidget {
   const LBSScreen({Key? key}) : super(key: key);
@@ -97,7 +96,6 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  // ================== UI ==================
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -106,7 +104,6 @@ class _LBSScreenState extends State<LBSScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
           children: [
-            // ====== CARD PETA USER ======
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -129,8 +126,6 @@ class _LBSScreenState extends State<LBSScreen> {
             ),
 
             const SizedBox(height: 16),
-
-            // STATUS LOKASI
             Text(
               _locationStatus,
               textAlign: TextAlign.center,
@@ -143,8 +138,6 @@ class _LBSScreenState extends State<LBSScreen> {
             ),
 
             const SizedBox(height: 12),
-
-            // TOMBOL PERBARUI LOKASI
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -173,7 +166,6 @@ class _LBSScreenState extends State<LBSScreen> {
     );
   }
 
-  // Widget Peta (hanya posisi user)
   Widget _buildMap() {
     final Marker userMarker = Marker(
       width: 80.0,

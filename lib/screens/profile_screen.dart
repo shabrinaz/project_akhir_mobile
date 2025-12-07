@@ -10,7 +10,6 @@ import '../helpers/db_helper.dart';
 import '../models/user_model.dart';
 import 'developer_screen.dart';
 
-/// 🎨 WARNA-WARNA PROFIL (UBAH DI SINI AJA)
 const Color kProfileBackgroundColor = Color(0xFFF7F9FC);
 
 const Color kProfileNameTextColor = Colors.black87;
@@ -91,7 +90,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // ===== FOTO PROFIL =====
   Future<void> _pickProfileImage() async {
     try {
       if (_currentUser == null || _currentUser!.id == null) {
@@ -136,7 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // ===== KONVERSI POIN =====
   int get _points => _currentUser?.points ?? 0;
 
   double _getConvertedAmount() {
@@ -178,7 +175,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return "$symbol ${amount.toStringAsFixed(2)}";
   }
 
-  // ===== LOGOUT =====
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('isLoggedIn');
@@ -200,14 +196,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? File(profileImagePath)
             : null;
 
-    // ❗️TIDAK ADA SCAFFOLD DI SINI – ini cuma isi body
     return Container(
       color: kProfileBackgroundColor,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           children: [
-            // Avatar
             Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -261,8 +255,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             const SizedBox(height: 28),
-
-            // TOTAL POIN
             Container(
               margin: const EdgeInsets.only(bottom: 14),
               decoration: BoxDecoration(
@@ -279,8 +271,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 subtitle: Text("$_points poin"),
               ),
             ),
-
-            // KONVERSI POIN
             Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
@@ -340,7 +330,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // CARD DEVELOPER
             InkWell(
               onTap: () {
                 Navigator.of(context).push(
@@ -376,7 +365,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // LOGOUT BUTTON
             SizedBox(
               width: double.infinity,
               height: 48,

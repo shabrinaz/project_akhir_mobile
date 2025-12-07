@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// 🎨 WARNA – GANTI DI SINI AJA
-const Color kDevBackground = Color(0xFFF7F9FC);         // background halaman
-const Color kDevCardBg = Colors.white;                  // background kotak
-const Color kDevCardBorder = Color(0xFF007BFF);         // border kotak
-const Color kDevTitleColor = Colors.black87;            // warna teks utama
-const Color kDevLabelColor = Color(0xFF007BFF);         // judul kecil di kartu
-const Color kDevMessageTextColor = Colors.blueAccent;   // teks pesan & kesan
+const Color kDevBackground = Color(0xFFF7F9FC);         
+const Color kDevCardBg = Colors.white;                  
+const Color kDevCardBorder = Color(0xFF007BFF);         
+const Color kDevTitleColor = Colors.black87;            
+const Color kDevLabelColor = Color(0xFF007BFF);         
+const Color kDevMessageTextColor = Colors.blueAccent;   
 
 class DeveloperScreen extends StatelessWidget {
   const DeveloperScreen({super.key});
@@ -15,8 +14,6 @@ class DeveloperScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kDevBackground,
-
-      // HEADER BIRU AGAK ROUNDED (biar mirip halaman lain)
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(90),
         child: AppBar(
@@ -45,9 +42,8 @@ class DeveloperScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch, // ⬅️ penting agar semua kartu full width
+          crossAxisAlignment: CrossAxisAlignment.stretch, 
           children: [
-            // ========== KARTU PROFIL DEVELOPER ==========
             Container(
               padding: const EdgeInsets.all(14),
               margin: const EdgeInsets.only(bottom: 20),
@@ -90,9 +86,8 @@ class DeveloperScreen extends StatelessWidget {
               ),
             ),
 
-            // ========== KARTU PESAN & KESAN (FULL WIDTH) ==========
             Container(
-              width: double.infinity, // ⬅️ memastikan benar-benar full
+              width: double.infinity, 
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
@@ -113,7 +108,6 @@ class DeveloperScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
 
-                  // 👉 INI BISA DIGANTI SESUAI MAU
                   Text(
                     "Mata Kuliahnya sangat menantang :)",
                     style: TextStyle(

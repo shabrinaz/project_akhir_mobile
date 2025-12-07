@@ -5,13 +5,11 @@ import '../models/article_model.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart';
-
-// DB & session
 import '../helpers/session_manager.dart';
 import '../helpers/db_helper.dart';
 import '../models/user_model.dart';
 
-/// 🎨 WARNA – GANTI DI SINI SAJA
+
 const Color kDetailBackground = Color(0xFFF7F9FC);
 const Color kDetailCardBg = Colors.white;
 const Color kDetailCardBorder = Color(0xFF007BFF);
@@ -140,9 +138,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     }
   }
 
-  /// Kasih poin:
-  /// - flag per user + per artikel di SharedPreferences
-  /// - poin disimpan di kolom `points` user di database
   Future<void> _awardUserPoints() async {
     if (_pointsAwarded) return;
 
@@ -190,7 +185,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     );
   }
 
-  /// Poin dikasih kalau URL berhasil dibuka
   Future<void> _launchUrl() async {
     final Uri uri = Uri.parse(widget.article.url);
 
@@ -286,7 +280,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Gambar artikel
               ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(16)),
@@ -299,7 +292,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    // Judul
                     Text(
                       widget.article.title,
                       style: const TextStyle(
@@ -316,8 +308,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       thickness: 1.2,
                       color: kDetailDividerColor,
                     ),
-
-                    // Konten
                     Text(
                       fullTextContent,
                       style: const TextStyle(
@@ -330,7 +320,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Info poin
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -377,7 +366,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Tombol Lihat Sumber Asli
                     SizedBox(
                       width: double.infinity,
                       height: 48,
@@ -447,7 +435,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               ),
             ),
 
-          // gradient tipis atas-bawah biar teks di atas gambar (kalau mau nanti)
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(

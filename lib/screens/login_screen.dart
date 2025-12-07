@@ -5,7 +5,6 @@ import '../helpers/session_manager.dart';
 import '../models/user_model.dart';
 import 'register_screen.dart';
 
-/// 🎨 GANTI WARNA DI SINI SAJA
 const Color kBg = Color.fromARGB(255, 255, 255, 255);
 const Color kBorder = Color(0xFF0A73FF);
 const Color kButton = Color(0xFF0A73FF);
@@ -81,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: kBg,
       body: SafeArea(
-        child: SingleChildScrollView(  // supaya tidak overflow di HP kecil
+        child: SingleChildScrollView(  
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
             child: Column(
@@ -89,8 +88,6 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 
                 const SizedBox(height: 40),
-
-                /// TITLE
                 const Text(
                   "Login",
                   style: TextStyle(
@@ -102,7 +99,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 60),
 
-                /// FIELD USERNAME
                 TextField(
                   controller: _username,
                   decoration: _field("Nama Lengkap", Icons.person),
@@ -110,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 18),
 
-                /// FIELD PASSWORD
                 TextField(
                   controller: _password,
                   obscureText: true,
@@ -119,7 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 32),
 
-                /// BUTTON LOGIN
                 SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -144,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 80),
 
-                /// LINK REGISTER
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

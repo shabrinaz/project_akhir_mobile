@@ -4,7 +4,6 @@ import 'lbs_screen.dart';
 import 'profile_screen.dart';
 import 'donation_screen.dart';
 
-/// 🎨 THEME WARNA – konsisten dengan halaman lain
 const Color kNavBarColor = Color(0xFF007BFF);
 const Color kNavBarTextColor = Colors.white;
 const double kNavBarRadius = 22;
@@ -58,7 +57,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ==================== APPBAR ======================
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(72),
         child: AppBar(
@@ -66,14 +64,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           automaticallyImplyLeading: false,
           elevation: 0,
 
-          // 🎯 Rounded supaya seragam
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
               bottom: Radius.circular(kNavBarRadius),
             ),
           ),
 
-          // 🎯 Title lebih atas & rapi
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Text(
@@ -86,7 +82,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ),
 
-          // 🔄 Refresh hanya di halaman artikel
           actions: _selectedIndex == 0
               ? [
                   Padding(
@@ -106,10 +101,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
       ),
 
-      // ==================== BODY ======================
       body: _widgetOptions.elementAt(_selectedIndex),
-
-      // ==================== BOTTOM NAV ======================
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

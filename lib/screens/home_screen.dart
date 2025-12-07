@@ -3,7 +3,6 @@ import 'package:project_akhir_mobile/screens/article_detail_screen.dart';
 import '../services/news_service.dart';
 import '../models/article_model.dart';
 
-/// 🎨 WARNA–WARNA CUSTOM (EDIT BAGIAN INI AJA)
 const Color kHomeBackground = Color(0xFFF7F9FC);
 const Color kSearchBorder = Color(0xFF007BFF);
 const Color kSearchIcon = Color(0xFF007BFF);
@@ -74,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
       color: kHomeBackground,
       child: Column(
         children: [
-          // SEARCH BAR
           Padding(
             padding: const EdgeInsets.all(14),
             child: TextField(
@@ -107,7 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // LIST ARTIKEL
           Expanded(
             child: _isLoading
                 ? Center(
@@ -135,7 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // CARD ARTIKEL
   Widget _buildArticleCard(Article article) {
     return InkWell(
       onTap: () {
@@ -163,7 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // GAMBAR
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(14)),
@@ -183,7 +178,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
             ),
 
-            // JUDUL
             Padding(
               padding: const EdgeInsets.all(12),
               child: Text(

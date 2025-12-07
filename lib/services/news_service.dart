@@ -5,8 +5,8 @@ import '../models/article_model.dart';
 class NewsService {
   final String _apiKey = '0be632134bee42d8bbf876c1fd9a795c';
   final String _baseUrl = 'https://newsapi.org/v2/everything';
-  final int _minContentLength = 50; // Konten minimal 100 karakte
-  final int _maxArticlesToReturn = 15; // Jumlah artikel 
+  final int _minContentLength = 50; 
+  final int _maxArticlesToReturn = 15; 
   
   final String _defaultQuery = "donation OR charity OR global affairs OR business"; 
 

@@ -13,12 +13,10 @@ class Article {
     this.content,
   });
 
-  // 🔹 Helper buat bersihin "[+xxx chars]"
   static String? _cleanContent(dynamic rawContent) {
     if (rawContent == null) return null;
     String content = rawContent.toString();
 
-    // Hapus pola semacam " [+1234 chars]" di akhir teks
     content = content.replaceAll(
       RegExp(r'\s*\[\+\d+\schars\]$'),
       '',
